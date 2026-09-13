@@ -28,7 +28,8 @@ ecommerce-mern/
 ```bash
 cd backend
 npm install
-cp .env.example .env      # then edit MONGO_URI / JWT_SECRET as needed
+# Create .env only if it does not already exist, then edit MONGO_URI / JWT_SECRET.
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
 npm run seed:admin        # creates adminecommerce@gmail.com / Admin@12345 (or your .env values)
 npm run dev                # starts on http://localhost:5000
 ```
