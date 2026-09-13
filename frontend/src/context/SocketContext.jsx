@@ -7,12 +7,14 @@ const SocketContext = createContext(null);
 export function SocketProvider({ children }) {
   const { token } = useAuth();
   const socketRef = useRef(null);
+  const [socket, setSocket] = useState(null);
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     if (!token) {
       socketRef.current?.disconnect();
       socketRef.current = null;
+      setSocket(null);
       setConnected(false);
       return;
     }
@@ -23,15 +25,17 @@ export function SocketProvider({ children }) {
     socket.on('connect', () => setConnected(true));
     socket.on('disconnect', () => setConnected(false));
     socketRef.current = socket;
+    setSocket(socket);
 
-    return () => socket.disconnect();
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+      setSocket(null);
+      setConnected(false);
+    };
   }, [token]);
 
-  return (
-    <SocketContext.Provider value={{ socket: socketRef.current, connected }}>
-      {children}
-    </SocketContext.Provider>
-  );
+  return <SocketContext.Provider value={{ socket, connected }}>{children}</SocketContext.Provider>;
 }
 
 export const useSocket = () => useContext(SocketContext);
