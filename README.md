@@ -1,4 +1,4 @@
-# Ecommerce (MERN) — Codveda Full-Stack Internship Project
+# Ecommerce (MERN) — Full-Stack Project
 
 A full-stack ecommerce app built with **MongoDB, Express, React, Node.js**, covering
 setup, REST API, frontend, JWT auth/roles, database integration, a full MERN app,
