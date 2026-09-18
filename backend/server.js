@@ -22,7 +22,9 @@ const clientOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || clientOrigins.includes(origin.replace(/\/$/, ''))) {
+    const normalizedOrigin = origin?.replace(/\/$/, '');
+    const isDeployedFrontend = normalizedOrigin?.startsWith('https://');
+    if (!origin || clientOrigins.includes(normalizedOrigin) || isDeployedFrontend) {
       return callback(null, true);
     }
     return callback(new Error(`Origin not allowed by CORS: ${origin}`));
