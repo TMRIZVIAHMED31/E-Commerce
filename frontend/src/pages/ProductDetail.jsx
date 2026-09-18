@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
-const imageUrl = (image) => (image?.startsWith('/') ? `http://localhost:5000${image}` : image);
+const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
 export default function ProductDetail() {
   const { id } = useParams();

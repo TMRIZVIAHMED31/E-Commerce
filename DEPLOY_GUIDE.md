@@ -24,7 +24,7 @@ The project already uses the correct production-friendly configuration points:
 
 - Backend: `PORT` and `CLIENT_ORIGIN`
 - Frontend REST API: `VITE_API_URL`
-- Frontend Socket.IO connection: `VITE_SOCKET_URL`
+- Frontend Socket.IO connection: `VITE_SOCKET_URL` (optional when `VITE_API_URL` is set)
 
 ## 2. Create the production database
 
@@ -116,10 +116,10 @@ Remove the temporary production `.env` afterward. Alternatively, run `npm run se
 
    ```text
    VITE_API_URL=https://ecommerce-api-xxxx.onrender.com/api
-   VITE_SOCKET_URL=https://ecommerce-api-xxxx.onrender.com
    ```
 
    `VITE_API_URL` must include `/api`; `VITE_SOCKET_URL` must not include `/api`.
+   The frontend derives the socket origin from `VITE_API_URL` when `VITE_SOCKET_URL` is omitted.
 
 5. Deploy the project and copy the Vercel URL, for example:
 

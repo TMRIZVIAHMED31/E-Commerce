@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
+import { apiOrigin } from '../api/axios';
 
-const imageUrl = (image) => (image?.startsWith('/') ? `http://localhost:5000${image}` : image);
+const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
 export default function ProductCard({ product }) {
   return (

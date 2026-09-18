@@ -15,15 +15,28 @@ const initSocket = require('./socket/socketHandler');
 const app = express();
 const server = http.createServer(app);
 
-const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const clientOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
+  .split(',')
+  .map((origin) => origin.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || clientOrigins.includes(origin.replace(/\/$/, ''))) {
+      return callback(null, true);
+    }
+    return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+};
 
 const io = new Server(server, {
-  cors: { origin: clientOrigin, methods: ['GET', 'POST'] },
+  cors: corsOptions,
 });
 
 connectDB();
 
-app.use(cors({ origin: clientOrigin }));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
