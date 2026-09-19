@@ -24,7 +24,7 @@ export default function App() {
         <Route
           path="/cart"
           element={
-            <PrivateRoute roles={['user']}>
+            <PrivateRoute>
               <Cart />
             </PrivateRoute>
           }

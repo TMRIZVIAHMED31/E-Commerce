@@ -7,20 +7,32 @@ const CartContext = createContext(null);
 export function CartProvider({ children }) {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
+  const [cartGroups, setCartGroups] = useState([]);
 
   useEffect(() => {
-    if (user?.role !== 'user') {
+    if (!user) {
       setItems([]);
+      setCartGroups([]);
       return;
     }
 
     let active = true;
     api.get('/cart')
       .then(({ data }) => {
-        if (active) setItems(data.items || []);
+        if (!active) return;
+        if (data.carts) {
+          setCartGroups(data.carts);
+          setItems([]);
+        } else {
+          setItems(data.items || []);
+          setCartGroups([]);
+        }
       })
       .catch(() => {
-        if (active) setItems([]);
+        if (active) {
+          setItems([]);
+          setCartGroups([]);
+        }
       });
 
     return () => {
@@ -43,9 +55,12 @@ export function CartProvider({ children }) {
     }
   };
 
-  const updateQuantity = async (productId, requestedQuantity) => {
+  const updateQuantity = async (productId, requestedQuantity, userId) => {
     try {
-      const { data } = await api.put(`/cart/${productId}`, { quantity: requestedQuantity });
+      const { data } = await api.put(`/cart/${productId}`, {
+        quantity: requestedQuantity,
+        ...(userId ? { userId } : {}),
+      });
       setItems(data.items || []);
       return { success: true };
     } catch (err) {
@@ -53,22 +68,30 @@ export function CartProvider({ children }) {
     }
   };
 
-  const removeFromCart = async (productId) => {
+  const removeFromCart = async (productId, userId) => {
     try {
-      const { data } = await api.delete(`/cart/${productId}`);
-      setItems(data.items || []);
+      const { data } = await api.delete(`/cart/${productId}`, {
+        params: userId ? { userId } : undefined,
+      });
+      if (data.carts) setCartGroups(data.carts);
+      else setItems(data.items || []);
     } catch {
       // Keep the current cart visible when a remove request fails.
     }
   };
 
   const cartCount = useMemo(
-    () => items.reduce((total, item) => total + item.quantity, 0),
-    [items]
+    () => (cartGroups.length
+      ? cartGroups.reduce(
+        (total, cart) => total + cart.items.reduce((cartTotal, item) => cartTotal + item.quantity, 0),
+        0
+      )
+      : items.reduce((total, item) => total + item.quantity, 0)),
+    [items, cartGroups]
   );
 
   return (
-    <CartContext.Provider value={{ items, cartCount, addToCart, updateQuantity, removeFromCart }}>
+    <CartContext.Provider value={{ items, cartGroups, cartCount, addToCart, updateQuantity, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );

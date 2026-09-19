@@ -15,6 +15,16 @@ const getOrCreateCart = async (userId) => {
 // @route GET /api/cart (buyer only)
 const getCart = async (req, res) => {
   try {
+    if (req.user.role !== 'user') {
+      const carts = await Cart.find()
+        .populate('user', 'name email role')
+        .populate({
+          path: 'items.product',
+          populate: { path: 'seller', select: 'name email' },
+        });
+      return res.json({ carts });
+    }
+
     const cart = await getOrCreateCart(req.user._id);
     res.json(await populatedCart(cart));
   } catch (err) {
@@ -25,6 +35,10 @@ const getCart = async (req, res) => {
 // @route POST /api/cart (buyer only)
 const addToCart = async (req, res) => {
   try {
+    if (req.user.role !== 'user') {
+      return res.status(403).json({ message: 'Only buyers can add items to a cart' });
+    }
+
     const { productId, quantity = 1 } = req.body;
     const requestedQuantity = Number(quantity);
     if (!productId || !Number.isInteger(requestedQuantity) || requestedQuantity < 1) {
@@ -53,6 +67,10 @@ const addToCart = async (req, res) => {
 // @route PUT /api/cart/:productId (buyer only)
 const updateCartItem = async (req, res) => {
   try {
+    if (!['user', 'admin'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Sellers cannot update cart items' });
+    }
+
     const requestedQuantity = Number(req.body.quantity);
     if (!Number.isInteger(requestedQuantity) || requestedQuantity < 1) {
       return res.status(400).json({ message: 'Quantity must be a positive integer' });
@@ -64,7 +82,9 @@ const updateCartItem = async (req, res) => {
       return res.status(400).json({ message: `Only ${product.stock} available in stock` });
     }
 
-    const cart = await Cart.findOne({ user: req.user._id });
+    const cartUserId = req.user.role === 'admin' ? req.query.userId : req.user._id;
+    if (!cartUserId) return res.status(400).json({ message: 'userId is required for admin cart changes' });
+    const cart = await Cart.findOne({ user: cartUserId });
     const item = cart?.items.find((cartItem) => cartItem.product.toString() === req.params.productId);
     if (!item) return res.status(404).json({ message: 'Product is not in your cart' });
 
@@ -79,8 +99,14 @@ const updateCartItem = async (req, res) => {
 // @route DELETE /api/cart/:productId (buyer only)
 const removeCartItem = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id });
-    if (!cart) return res.json({ user: req.user._id, items: [] });
+    if (req.user.role === 'seller') {
+      return res.status(403).json({ message: 'Sellers cannot remove cart items' });
+    }
+
+    const cartUserId = req.user.role === 'admin' ? req.query.userId : req.user._id;
+    if (!cartUserId) return res.status(400).json({ message: 'userId is required for admin cart changes' });
+    const cart = await Cart.findOne({ user: cartUserId });
+    if (!cart) return res.json({ user: cartUserId, items: [] });
 
     cart.items = cart.items.filter((item) => item.product.toString() !== req.params.productId);
     await cart.save();

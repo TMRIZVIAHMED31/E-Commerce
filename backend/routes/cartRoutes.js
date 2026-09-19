@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.use(protect, authorize('user'));
+router.use(protect, authorize('user', 'seller', 'admin'));
 router.get('/', getCart);
 router.post('/', addToCart);
 router.put('/:productId', updateCartItem);
