@@ -4,6 +4,15 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 
+const formatDateTime = (value) => (
+  value
+    ? new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value))
+    : ''
+);
+
 export default function Chat() {
   const { conversationId } = useParams();
   const { user } = useAuth();
@@ -69,6 +78,9 @@ export default function Chat() {
           >
             <span className="sender">{m.sender?.name}</span>
             <p>{m.text}</p>
+            <time className="message-time" dateTime={m.createdAt}>
+              {formatDateTime(m.createdAt)}
+            </time>
           </div>
         ))}
         <div ref={bottomRef} />

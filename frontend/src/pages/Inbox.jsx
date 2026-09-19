@@ -3,6 +3,15 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
+const formatDateTime = (value) => (
+  value
+    ? new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(value))
+    : ''
+);
+
 export default function Inbox() {
   const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
@@ -44,6 +53,9 @@ export default function Inbox() {
               <strong>{otherParticipant(c)?.name}</strong>
               {c.product && <span className="muted"> — {c.product.name}</span>}
               <p className="muted">{c.lastMessage || 'No messages yet'}</p>
+              <time className="conversation-time" dateTime={c.lastMessageAt || c.createdAt}>
+                {formatDateTime(c.lastMessageAt || c.createdAt)}
+              </time>
             </Link>
           </li>
         ))}
