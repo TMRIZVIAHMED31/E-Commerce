@@ -53,9 +53,16 @@ export default function Inbox() {
               <strong>{otherParticipant(c)?.name}</strong>
               {c.product && <span className="muted"> — {c.product.name}</span>}
               <p className="muted">{c.lastMessage || 'No messages yet'}</p>
-              <time className="conversation-time" dateTime={c.lastMessageAt || c.createdAt}>
-                {formatDateTime(c.lastMessageAt || c.createdAt)}
-              </time>
+              <div className="conversation-times">
+                <time className="conversation-time" dateTime={c.createdAt}>
+                  Created: {formatDateTime(c.createdAt)}
+                </time>
+                {(c.lastMessage || c.lastMessageAt !== c.createdAt) && (
+                  <time className="conversation-time" dateTime={c.lastMessageAt}>
+                    Last active: {formatDateTime(c.lastMessageAt)}
+                  </time>
+                )}
+              </div>
             </Link>
           </li>
         ))}

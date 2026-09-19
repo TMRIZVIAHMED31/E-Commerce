@@ -79,7 +79,7 @@ export default function Chat() {
             <span className="sender">{m.sender?.name}</span>
             <p>{m.text}</p>
             <time className="message-time" dateTime={m.createdAt}>
-              {formatDateTime(m.createdAt)}
+              Sent: {formatDateTime(m.createdAt)}
             </time>
           </div>
         ))}
