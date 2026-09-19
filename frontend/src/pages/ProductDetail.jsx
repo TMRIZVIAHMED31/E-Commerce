@@ -33,8 +33,8 @@ export default function ProductDetail() {
     }
   };
 
-  const addProduct = (buyNow = false) => {
-    const result = addToCart(product, quantity);
+  const addProduct = async (buyNow = false) => {
+    const result = await addToCart(product, quantity);
     setCartMessage(result.message || `${quantity} item${quantity === 1 ? '' : 's'} added to cart.`);
     if (result.success && buyNow) navigate('/cart');
   };

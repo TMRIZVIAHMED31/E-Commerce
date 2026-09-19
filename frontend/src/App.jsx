@@ -21,7 +21,14 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/products/:id" element={<ProductDetail />} />
-        <Route path="/cart" element={<Cart />} />
+        <Route
+          path="/cart"
+          element={
+            <PrivateRoute roles={['user']}>
+              <Cart />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/seller"

@@ -7,8 +7,8 @@ const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : i
 export default function Cart() {
   const { items, updateQuantity, removeFromCart } = useCart();
 
-  const handleQuantityChange = (productId, value) => {
-    const result = updateQuantity(productId, value);
+  const handleQuantityChange = async (productId, value) => {
+    const result = await updateQuantity(productId, value);
     if (!result.success) window.alert(result.message);
   };
 

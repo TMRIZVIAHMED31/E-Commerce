@@ -11,8 +11,8 @@ export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const [message, setMessage] = useState('');
 
-  const handleAddToCart = () => {
-    const result = addToCart(product);
+  const handleAddToCart = async () => {
+    const result = await addToCart(product);
     setMessage(result.success ? 'Added to cart.' : result.message);
   };
 

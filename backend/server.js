@@ -10,6 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const chatRoutes = require('./routes/chatRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const initSocket = require('./socket/socketHandler');
 
 const app = express();
@@ -54,6 +55,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Central error handler (catches anything thrown/passed to next())
 app.use((err, req, res, next) => {
