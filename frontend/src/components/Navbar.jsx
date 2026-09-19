@@ -1,8 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -15,6 +17,7 @@ export default function Navbar() {
       <Link to="/" className="brand">ShopMERN</Link>
       <div className="nav-links">
         <Link to="/">Products</Link>
+        <Link to="/cart" className="cart-link">Cart <span className="cart-count">{cartCount}</span></Link>
         {user && <Link to="/inbox">Chat</Link>}
         {user && (user.role === 'seller' || user.role === 'admin') && (
           <Link to="/seller">Seller Dashboard</Link>
