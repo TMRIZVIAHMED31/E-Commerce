@@ -8,10 +8,13 @@ const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : i
 export default function Cart() {
   const { user } = useAuth();
   const { items, cartGroups, updateQuantity, removeFromCart } = useCart();
+  const [busyProduct, setBusyProduct] = useState(null);
 
   const handleQuantityChange = async (productId, value, userId) => {
+    setBusyProduct(productId);
     const result = await updateQuantity(productId, value, userId);
     if (!result.success) window.alert(result.message);
+    setBusyProduct(null);
   };
 
   const total = items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
@@ -40,13 +43,13 @@ export default function Cart() {
                     onChange={(event) => handleQuantityChange(product._id, event.target.value, cartUserId)}
                   />
                 </label>
-                <button className="link-button" onClick={() => removeFromCart(product._id, cartUserId)}>
+                <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async () => { setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
                   Remove
                 </button>
               </div>
             )}
             {readOnly && user?.role === 'admin' && (
-              <button className="link-button" onClick={() => removeFromCart(product._id, cartUserId)}>
+              <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async () => { setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
                 Remove item
               </button>
             )}

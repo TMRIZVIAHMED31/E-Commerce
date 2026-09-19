@@ -16,6 +16,7 @@ export default function ProductDetail() {
   const [error, setError] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [cartMessage, setCartMessage] = useState('');
+  const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     api.get(`/products/${id}`).then((res) => setProduct(res.data)).catch(() => setError('Product not found'));
@@ -34,9 +35,12 @@ export default function ProductDetail() {
   };
 
   const addProduct = async (buyNow = false) => {
+    if (adding) return;
+    setAdding(true);
     const result = await addToCart(product, quantity);
     setCartMessage(result.message || `${quantity} item${quantity === 1 ? '' : 's'} added to cart.`);
     if (result.success && buyNow) navigate('/cart');
+    setAdding(false);
   };
 
   if (error) return <div className="container">{error}</div>;
@@ -71,8 +75,8 @@ export default function ProductDetail() {
           />
         </label>
         <div className="purchase-actions">
-          <button disabled={product.stock < 1} onClick={() => addProduct()}>🛒 Add to Cart</button>
-          <button className="buy-now" disabled={product.stock < 1} onClick={() => addProduct(true)}>⚡ Buy Now</button>
+          <button disabled={product.stock < 1 || adding} onClick={() => addProduct()}>🛒 {adding ? 'Adding...' : 'Add to Cart'}</button>
+          <button className="buy-now" disabled={product.stock < 1 || adding} onClick={() => addProduct(true)}>⚡ {adding ? 'Processing...' : 'Buy Now'}</button>
         </div>
         {cartMessage && <p className="cart-message" role="status">{cartMessage}</p>}
       </div>

@@ -9,15 +9,19 @@ export default function Register() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     setError('');
+    setSubmitting(true);
     try {
       await register(form.name, form.email, form.password, form.role);
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
+      setSubmitting(false);
     }
   };
 
@@ -56,7 +60,7 @@ export default function Register() {
             <option value="seller">Seller (list products)</option>
           </select>
         </label>
-        <button type="submit">Create account</button>
+        <button type="submit" disabled={submitting}>{submitting ? 'Creating account...' : 'Create account'}</button>
       </form>
       <p>
         Already have an account? <Link to="/login">Login</Link>

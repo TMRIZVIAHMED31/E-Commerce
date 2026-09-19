@@ -7,6 +7,7 @@ import api from '../api/axios';
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = async () => {
     const { data } = await api.get('/admin/users');
@@ -18,12 +19,16 @@ export default function AdminDashboard() {
   }, []);
 
   const handleDelete = async (id) => {
+    if (deletingId) return;
     if (!confirm('Delete this user?')) return;
+    setDeletingId(id);
     try {
       await api.delete(`/admin/users/${id}`);
       load();
     } catch (err) {
       setError(err.response?.data?.message || 'Delete failed');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -66,7 +71,7 @@ export default function AdminDashboard() {
                       <option value="user">user</option>
                       <option value="seller">seller</option>
                     </select>
-                    <button onClick={() => handleDelete(u._id)}>Delete</button>
+                    <button type="button" disabled={deletingId === u._id} onClick={() => handleDelete(u._id)}>{deletingId === u._id ? 'Deleting...' : 'Delete'}</button>
                   </>
                 )}
               </td>

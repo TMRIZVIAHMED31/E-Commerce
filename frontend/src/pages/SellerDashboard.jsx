@@ -12,6 +12,8 @@ export default function SellerDashboard() {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const load = async () => {
     const { data } = await api.get('/products/mine/list');
@@ -29,7 +31,9 @@ export default function SellerDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (saving) return;
     setError('');
+    setSaving(true);
     const payload = new FormData();
     payload.append('name', form.name);
     payload.append('description', form.description);
@@ -47,6 +51,8 @@ export default function SellerDashboard() {
       load();
     } catch (err) {
       setError(err.response?.data?.message || 'Save failed');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -63,12 +69,16 @@ export default function SellerDashboard() {
   };
 
   const handleDelete = async (idToDelete) => {
+    if (deletingId) return;
     if (!confirm('Delete this product?')) return;
+    setDeletingId(idToDelete);
     try {
       await api.delete(`/products/${idToDelete}`);
       load();
     } catch (err) {
       alert(err.response?.data?.message || 'Delete failed');
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -116,7 +126,7 @@ export default function SellerDashboard() {
           onChange={(e) => setForm({ ...form, image: e.target.files[0] || null })}
         />
         <div className="form-actions">
-          <button type="submit">{editingId ? 'Update' : 'Create'}</button>
+          <button type="submit" disabled={saving}>{saving ? 'Saving...' : editingId ? 'Update' : 'Create'}</button>
           {editingId && <button type="button" onClick={resetForm}>Cancel</button>}
         </div>
       </form>
@@ -139,8 +149,8 @@ export default function SellerDashboard() {
               <td>{p.stock}</td>
               {user.role === 'admin' && <td>{p.seller?.name}</td>}
               <td>
-                <button onClick={() => handleEdit(p)}>Edit</button>
-                <button onClick={() => handleDelete(p._id)}>Delete</button>
+                <button type="button" onClick={() => handleEdit(p)}>Edit</button>
+                <button type="button" disabled={deletingId === p._id} onClick={() => handleDelete(p._id)}>{deletingId === p._id ? 'Deleting...' : 'Delete'}</button>
               </td>
             </tr>
           ))}

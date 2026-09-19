@@ -10,10 +10,14 @@ export default function ProductCard({ product }) {
   const { user } = useAuth();
   const { addToCart } = useCart();
   const [message, setMessage] = useState('');
+  const [adding, setAdding] = useState(false);
 
   const handleAddToCart = async () => {
+    if (adding) return;
+    setAdding(true);
     const result = await addToCart(product);
     setMessage(result.success ? 'Added to cart.' : result.message);
+    setAdding(false);
   };
 
   return (
@@ -32,7 +36,7 @@ export default function ProductCard({ product }) {
           disabled={product.stock < 1}
           onClick={handleAddToCart}
         >
-          {product.stock < 1 ? 'Out of stock' : 'Add to Cart'}
+          {product.stock < 1 ? 'Out of stock' : adding ? 'Adding...' : 'Add to Cart'}
         </button>
       )}
       {message && <p className="cart-message" role="status">{message}</p>}
