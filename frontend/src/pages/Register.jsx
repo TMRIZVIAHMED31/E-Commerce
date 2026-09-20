@@ -10,6 +10,7 @@ export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,14 +46,24 @@ export default function Register() {
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           required
         />
-        <input
-          type="password"
-          placeholder="Password (min 6 chars)"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          required
-          minLength={6}
-        />
+        <div className="password-field">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Password (min 6 chars)"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            required
+            minLength={6}
+          />
+          <button
+            type="button"
+            className="password-toggle"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? 'Hide' : 'Show'}
+          </button>
+        </div>
         <label>
           I want to register as:
           <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
