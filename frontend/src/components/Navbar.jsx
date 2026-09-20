@@ -17,7 +17,6 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="brand-area">
-        <Link to="/" className="brand">ShopMERN</Link>
         <button
           type="button"
           className="menu-toggle"
@@ -29,6 +28,7 @@ export default function Navbar() {
           <span />
           <span />
         </button>
+        <Link to="/" className="brand">ShopMERN</Link>
         {menuOpen && (
           <div className="menu-dropdown">
             <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
