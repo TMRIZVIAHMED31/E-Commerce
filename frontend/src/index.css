@@ -15,6 +15,7 @@ a { text-decoration: none; color: inherit; }
 .menu-drawer-links { display: flex; flex-direction: column; gap: 4px; padding-top: 26px; }
 .menu-drawer-links a { padding: 10px 14px; border-radius: 6px; color: #e5e7eb; font-size: 1rem; }
 .menu-drawer-links a:hover, .menu-drawer-links a.active { background: #1b2028; color: #fff; }
+.menu-notification { display: inline-grid; min-width: 22px; height: 22px; margin-left: 6px; padding: 0 6px; place-items: center; border-radius: 999px; background: #f59e0b; color: #111827; font-size: 0.78rem; font-weight: 700; }
 .nav-links { display: flex; gap: 16px; align-items: center; }
 .nav-links a { color: #e5e7eb; }
 .cart-link { display: inline-flex; align-items: center; gap: 6px; }

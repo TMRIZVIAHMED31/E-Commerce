@@ -1,13 +1,35 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import api from '../api/axios';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [chatCount, setChatCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setChatCount(0);
+      return undefined;
+    }
+
+    let active = true;
+    api.get('/chat/conversations')
+      .then(({ data }) => {
+        if (active) setChatCount(data.length);
+      })
+      .catch(() => {
+        if (active) setChatCount(0);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -40,9 +62,15 @@ export default function Navbar() {
               <div className="menu-drawer-links">
                 <Link to="/" className="active" onClick={() => setMenuOpen(false)}>Home</Link>
                 {user?.role === 'user' && (
-                  <Link to="/cart" onClick={() => setMenuOpen(false)}>Cart ({cartCount})</Link>
+                  <Link to="/cart" onClick={() => setMenuOpen(false)}>
+                    Cart <span className="menu-notification">{cartCount}</span>
+                  </Link>
                 )}
-                {user && <Link to="/inbox" onClick={() => setMenuOpen(false)}>Chat</Link>}
+                {user && (
+                  <Link to="/inbox" onClick={() => setMenuOpen(false)}>
+                    Chat <span className="menu-notification">{chatCount}</span>
+                  </Link>
+                )}
                 {!user && <Link to="/login" onClick={() => setMenuOpen(false)}>Chat</Link>}
               </div>
             </aside>
