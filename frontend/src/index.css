@@ -7,9 +7,14 @@ a { text-decoration: none; color: inherit; }
 .navbar .brand { font-weight: 700; font-size: 1.2rem; color: #fff; }
 .menu-toggle { display: flex; flex-direction: column; gap: 4px; width: 38px; height: 34px; justify-content: center; align-items: center; padding: 0; border: 1px solid #6b7280; border-radius: 6px; background: transparent; cursor: pointer; }
 .menu-toggle span { display: block; width: 18px; height: 2px; border-radius: 2px; background: #d1d5db; }
-.menu-dropdown { position: absolute; top: calc(100% + 10px); left: 0; z-index: 10; display: flex; flex-direction: column; min-width: 150px; padding: 6px; border-radius: 6px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-.menu-dropdown a { padding: 9px 10px; color: #1f2937; }
-.menu-dropdown a:hover { background: #f3f4f6; }
+.menu-backdrop { position: fixed; inset: 0; z-index: 20; border: 0; background: rgba(0,0,0,0.45); cursor: default; }
+.menu-drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 21; width: min(345px, 86vw); padding: 18px 16px; background: #05080d; color: #f3f4f6; box-shadow: 8px 0 24px rgba(0,0,0,0.35); }
+.menu-drawer-header { display: flex; align-items: center; justify-content: space-between; padding: 0 8px 22px; border-bottom: 1px solid #27303b; }
+.menu-drawer-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 50%; background: #f3f4f6; color: #111827; font-weight: 800; }
+.menu-close { border: 0; background: transparent; color: #9ca3af; font-size: 1.5rem; cursor: pointer; }
+.menu-drawer-links { display: flex; flex-direction: column; gap: 4px; padding-top: 26px; }
+.menu-drawer-links a { padding: 10px 14px; border-radius: 6px; color: #e5e7eb; font-size: 1rem; }
+.menu-drawer-links a:hover, .menu-drawer-links a.active { background: #1b2028; color: #fff; }
 .nav-links { display: flex; gap: 16px; align-items: center; }
 .nav-links a { color: #e5e7eb; }
 .cart-link { display: inline-flex; align-items: center; gap: 6px; }

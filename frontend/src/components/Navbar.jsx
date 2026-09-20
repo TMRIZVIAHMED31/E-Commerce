@@ -30,14 +30,23 @@ export default function Navbar() {
         </button>
         <Link to="/" className="brand">ShopMERN</Link>
         {menuOpen && (
-          <div className="menu-dropdown">
-            <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
-            {user?.role === 'user' && (
-              <Link to="/cart" onClick={() => setMenuOpen(false)}>Cart ({cartCount})</Link>
-            )}
-            {user && <Link to="/inbox" onClick={() => setMenuOpen(false)}>Chat</Link>}
-            {!user && <Link to="/login" onClick={() => setMenuOpen(false)}>Chat</Link>}
-          </div>
+          <>
+            <button type="button" className="menu-backdrop" aria-label="Close navigation menu" onClick={() => setMenuOpen(false)} />
+            <aside className="menu-drawer" aria-label="Navigation menu">
+              <div className="menu-drawer-header">
+                <span className="menu-drawer-mark">S</span>
+                <button type="button" className="menu-close" aria-label="Close navigation menu" onClick={() => setMenuOpen(false)}>x</button>
+              </div>
+              <div className="menu-drawer-links">
+                <Link to="/" className="active" onClick={() => setMenuOpen(false)}>Home</Link>
+                {user?.role === 'user' && (
+                  <Link to="/cart" onClick={() => setMenuOpen(false)}>Cart ({cartCount})</Link>
+                )}
+                {user && <Link to="/inbox" onClick={() => setMenuOpen(false)}>Chat</Link>}
+                {!user && <Link to="/login" onClick={() => setMenuOpen(false)}>Chat</Link>}
+              </div>
+            </aside>
+          </>
         )}
       </div>
       <div className="nav-links">
