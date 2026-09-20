@@ -17,7 +17,7 @@ export default function Navbar() {
       <Link to="/" className="brand">ShopMERN</Link>
       <div className="nav-links">
         <Link to="/">Products</Link>
-        {user && (
+        {user?.role === 'user' && (
           <Link to="/cart" className="cart-link">
             Cart <span className="cart-count">{cartCount}</span>
           </Link>
