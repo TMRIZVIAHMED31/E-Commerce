@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -6,6 +7,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -14,7 +16,28 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="brand">ShopMERN</Link>
+      <div className="brand-area">
+        <Link to="/" className="brand">ShopMERN</Link>
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-label="Open navigation menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          ...
+        </button>
+        {menuOpen && (
+          <div className="menu-dropdown">
+            <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
+            {user?.role === 'user' && (
+              <Link to="/cart" onClick={() => setMenuOpen(false)}>Cart ({cartCount})</Link>
+            )}
+            {user && <Link to="/inbox" onClick={() => setMenuOpen(false)}>Chat</Link>}
+            {!user && <Link to="/login" onClick={() => setMenuOpen(false)}>Chat</Link>}
+          </div>
+        )}
+      </div>
       <div className="nav-links">
         <Link to="/">Products</Link>
         {user?.role === 'user' && (
