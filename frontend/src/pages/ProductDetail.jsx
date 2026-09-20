@@ -62,24 +62,26 @@ export default function ProductDetail() {
       <p className="muted">In stock: {product.stock}</p>
       <p className="muted">Sold by: {product.seller?.name}</p>
 
-      <div className="purchase-panel">
-        <label className="quantity-control">
-          Quantity
-          <input
-            type="number"
-            min="1"
-            max={product.stock}
-            value={quantity}
-            disabled={product.stock < 1}
-            onChange={(event) => setQuantity(Math.max(1, Math.min(product.stock, Number(event.target.value) || 1)))}
-          />
-        </label>
-        <div className="purchase-actions">
-          <button disabled={product.stock < 1 || adding} onClick={() => addProduct()}>🛒 {adding ? 'Adding...' : 'Add to Cart'}</button>
-          <button className="buy-now" disabled={product.stock < 1 || adding} onClick={() => addProduct(true)}>⚡ {adding ? 'Processing...' : 'Buy Now'}</button>
+      {user?.role === 'user' && (
+        <div className="purchase-panel">
+          <label className="quantity-control">
+            Quantity
+            <input
+              type="number"
+              min="1"
+              max={product.stock}
+              value={quantity}
+              disabled={product.stock < 1}
+              onChange={(event) => setQuantity(Math.max(1, Math.min(product.stock, Number(event.target.value) || 1)))}
+            />
+          </label>
+          <div className="purchase-actions">
+            <button disabled={product.stock < 1 || adding} onClick={() => addProduct()}>🛒 {adding ? 'Adding...' : 'Add to Cart'}</button>
+            <button className="buy-now" disabled={product.stock < 1 || adding} onClick={() => addProduct(true)}>⚡ {adding ? 'Processing...' : 'Buy Now'}</button>
+          </div>
+          {cartMessage && <p className="cart-message" role="status">{cartMessage}</p>}
         </div>
-        {cartMessage && <p className="cart-message" role="status">{cartMessage}</p>}
-      </div>
+      )}
 
       {user && user.role === 'user' && (
         <button onClick={startChat}>Chat with seller</button>
