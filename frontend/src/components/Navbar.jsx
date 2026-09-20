@@ -25,7 +25,9 @@ export default function Navbar() {
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          ...
+          <span />
+          <span />
+          <span />
         </button>
         {menuOpen && (
           <div className="menu-dropdown">
