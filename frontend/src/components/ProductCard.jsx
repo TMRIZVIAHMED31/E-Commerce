@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -7,6 +7,7 @@ import { useCart } from '../context/CartContext';
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
 export default function ProductCard({ product }) {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { addToCart } = useCart();
   const [message, setMessage] = useState('');
@@ -20,8 +21,20 @@ export default function ProductCard({ product }) {
     setAdding(false);
   };
 
+  const openProduct = () => {
+    navigate(`/products/${product._id}`);
+  };
+
+  const handleCardKeyDown = (event) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openProduct();
+    }
+  };
+
   return (
-    <div className="card">
+    <div className="card product-card" role="link" tabIndex={0} onClick={openProduct} onKeyDown={handleCardKeyDown}>
       <img
         src={imageUrl(product.image) || 'https://via.placeholder.com/300x200?text=Product'}
         alt={product.name}
@@ -34,7 +47,10 @@ export default function ProductCard({ product }) {
         <button
           className="btn card-cart-button"
           disabled={product.stock < 1}
-          onClick={handleAddToCart}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleAddToCart();
+          }}
         >
           {product.stock < 1 ? 'Out of stock' : adding ? 'Adding...' : 'Add to Cart'}
         </button>
