@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import CartLogo from './CartLogo';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
@@ -52,6 +53,7 @@ export default function ProductCard({ product }) {
             handleAddToCart();
           }}
         >
+          <CartLogo className="cart-logo-button" />
           {product.stock < 1 ? 'Out of stock' : adding ? 'Adding...' : 'Add to Cart'}
         </button>
       )}

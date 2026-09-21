@@ -5,6 +5,7 @@ import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import ChatLogo from '../components/ChatLogo';
+import CartLogo from '../components/CartLogo';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 const fallbackImage = 'https://images.unsplash.com/photo-1585518419759-7fe2e0fbf8a6?auto=format&fit=crop&w=900&q=80';
@@ -186,7 +187,8 @@ export default function ProductDetail() {
 
             {user?.role === 'user' && (
               <button type="button" className="add-to-cart-button" disabled={product.stock < 1 || adding} onClick={() => addProduct()}>
-                🛒 {adding ? 'Adding...' : 'Add to Cart'}
+                <CartLogo className="cart-logo-button" />
+                {adding ? 'Adding...' : 'Add to Cart'}
               </button>
             )}
           </div>

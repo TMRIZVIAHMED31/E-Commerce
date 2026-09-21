@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import ChatLogo from './ChatLogo';
+import CartLogo from './CartLogo';
 import api from '../api/axios';
 
 export default function Navbar() {
@@ -79,7 +80,9 @@ export default function Navbar() {
                 </button>
                 {user?.role === 'user' && (
                   <Link to="/cart" onClick={() => setMenuOpen(false)}>
-                    Cart <span className="menu-notification">{cartCount}</span>
+                    <CartLogo className="cart-logo-menu" />
+                    <span>Cart</span>
+                    <span className="menu-notification">{cartCount}</span>
                   </Link>
                 )}
                 {user && (
