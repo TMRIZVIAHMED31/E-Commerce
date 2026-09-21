@@ -8,7 +8,26 @@ import { useCart } from '../context/CartContext';
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 const fallbackImage = 'https://images.unsplash.com/photo-1585518419759-7fe2e0fbf8a6?auto=format&fit=crop&w=900&q=80';
 
-const colorOptions = [
+const colorPalette = {
+  black: '#1b1d20',
+  'matte black': '#1b1d20',
+  grey: '#d4d4d8',
+  'stone grey': '#d4d4d8',
+  white: '#f4f4f5',
+  'cloud white': '#f4f4f5',
+  red: '#ef4444',
+  blue: '#2563eb',
+  silver: '#e5e7eb',
+  green: '#22c55e',
+};
+
+const normalizeColorValue = (name) => {
+  if (!name) return '#d1d5db';
+  const match = colorPalette[name.trim().toLowerCase()];
+  return match || '#d1d5db';
+};
+
+const defaultColorOptions = [
   { name: 'Matte Black', value: '#1b1d20' },
   { name: 'Stone Grey', value: '#d4d4d8' },
   { name: 'Cloud White', value: '#f4f4f5' },
@@ -25,16 +44,33 @@ export default function ProductDetail() {
   const [cartMessage, setCartMessage] = useState('');
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(colorOptions[0]);
+  const [selectedColor, setSelectedColor] = useState(defaultColorOptions[0]);
   const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
     api.get(`/products/${id}`).then((res) => setProduct(res.data)).catch(() => setError('Product not found'));
   }, [id]);
 
+  const colorOptions = useMemo(() => {
+    const values = product?.colors?.length ? product.colors : product?.color ? [product.color] : [];
+    if (values.length === 0) return defaultColorOptions;
+    return values.map((value) => ({
+      name: value,
+      value: normalizeColorValue(value),
+    }));
+  }, [product]);
+
+  useEffect(() => {
+    if (colorOptions.length > 0) {
+      setSelectedColor((current) => current && colorOptions.some((option) => option.name === current.name) ? current : colorOptions[0]);
+    }
+  }, [colorOptions]);
+
   const galleryImages = useMemo(() => {
+    const images = product?.images?.length ? product.images.map((image) => imageUrl(image)).filter(Boolean) : [];
+    if (images.length > 0) return images;
     const primary = imageUrl(product?.image) || fallbackImage;
-    return [primary, primary, primary];
+    return [primary];
   }, [product]);
 
   const startChat = async () => {
@@ -102,24 +138,26 @@ export default function ProductDetail() {
             <span className="stock-badge">✓ In Stock</span>
           </div>
 
-          <div className="option-block">
-            <span className="option-label">Color</span>
-            <div className="color-swatches">
-              {colorOptions.map((color) => (
-                <button
-                  key={color.name}
-                  type="button"
-                  className={`color-swatch ${selectedColor.name === color.name ? 'selected' : ''}`}
-                  title={color.name}
-                  style={{ backgroundColor: color.value }}
-                  onClick={() => setSelectedColor(color)}
-                >
-                  <span className="sr-only">{color.name}</span>
-                </button>
-              ))}
+          {colorOptions.length > 0 && (
+            <div className="option-block">
+              <span className="option-label">Color</span>
+              <div className="color-swatches">
+                {colorOptions.map((color) => (
+                  <button
+                    key={color.name}
+                    type="button"
+                    className={`color-swatch ${selectedColor?.name === color.name ? 'selected' : ''}`}
+                    title={color.name}
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => setSelectedColor(color)}
+                  >
+                    <span className="sr-only">{color.name}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="selected-color-name">{selectedColor?.name || colorOptions[0].name}</div>
             </div>
-            <div className="selected-color-name">{selectedColor.name}</div>
-          </div>
+          )}
 
           <div className="purchase-row">
             <div className="quantity-stepper" aria-label="Select quantity">

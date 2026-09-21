@@ -52,7 +52,8 @@ export default function SellerDashboard() {
     payload.append('category', form.category);
     payload.append('stock', Number(form.stock || 0));
     payload.append('color', form.color || '');
-    payload.append('colors', JSON.stringify((form.colors || '').split(',').map((item) => item.trim()).filter(Boolean)));
+    const colorList = (form.colors || '').split(',').map((item) => item.trim()).filter(Boolean);
+    payload.append('colors', JSON.stringify(colorList));
     payload.append(
       'properties',
       JSON.stringify({
@@ -159,7 +160,7 @@ export default function SellerDashboard() {
           onChange={(e) => setForm({ ...form, color: e.target.value })}
         />
         <input
-          placeholder="Available colors (comma separated)"
+          placeholder="Available colors (comma separated, e.g. Black, White, Red)"
           value={form.colors}
           onChange={(e) => setForm({ ...form, colors: e.target.value })}
         />
