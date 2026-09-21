@@ -2,7 +2,22 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
-const emptyForm = { name: '', description: '', price: '', category: '', stock: '', image: null };
+const emptyForm = {
+  name: '',
+  description: '',
+  price: '',
+  category: '',
+  stock: '',
+  color: '',
+  colors: '',
+  warranty: '',
+  wattage: '',
+  capacity: '',
+  voltage: '',
+  sku: '',
+  options: '',
+  images: [],
+};
 
 // Seller: manages ONLY their own products.
 // Admin ("author"): sees and can edit/delete every product in the system.
@@ -40,7 +55,29 @@ export default function SellerDashboard() {
     payload.append('price', Number(form.price));
     payload.append('category', form.category);
     payload.append('stock', Number(form.stock || 0));
-    if (form.image) payload.append('image', form.image);
+    payload.append('color', form.color || '');
+    payload.append('colors', JSON.stringify((form.colors || '').split(',').map((item) => item.trim()).filter(Boolean)));
+    payload.append(
+      'properties',
+      JSON.stringify({
+        warranty: form.warranty,
+        wattage: form.wattage,
+        capacity: form.capacity,
+        voltage: form.voltage,
+      })
+    );
+    payload.append(
+      'details',
+      JSON.stringify({
+        sku: form.sku,
+        options: form.options,
+      })
+    );
+
+    if (form.images && form.images.length > 0) {
+      Array.from(form.images).forEach((file) => payload.append('images', file));
+    }
+
     try {
       if (editingId) {
         await api.put(`/products/${editingId}`, payload);
@@ -64,7 +101,15 @@ export default function SellerDashboard() {
       price: p.price,
       category: p.category,
       stock: p.stock,
-      image: null,
+      color: p.color || '',
+      colors: (p.colors || []).join(', '),
+      warranty: p.properties?.warranty || '',
+      wattage: p.properties?.wattage || '',
+      capacity: p.properties?.capacity || '',
+      voltage: p.properties?.voltage || '',
+      sku: p.details?.sku || '',
+      options: p.details?.options || '',
+      images: [],
     });
   };
 
@@ -121,9 +166,55 @@ export default function SellerDashboard() {
           onChange={(e) => setForm({ ...form, stock: e.target.value })}
         />
         <input
+          placeholder="Primary color"
+          value={form.color}
+          onChange={(e) => setForm({ ...form, color: e.target.value })}
+        />
+        <input
+          placeholder="Available colors (comma separated)"
+          value={form.colors}
+          onChange={(e) => setForm({ ...form, colors: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Warranty"
+          value={form.warranty}
+          onChange={(e) => setForm({ ...form, warranty: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Wattage"
+          value={form.wattage}
+          onChange={(e) => setForm({ ...form, wattage: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Capacity"
+          value={form.capacity}
+          onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Voltage"
+          value={form.voltage}
+          onChange={(e) => setForm({ ...form, voltage: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="SKU"
+          value={form.sku}
+          onChange={(e) => setForm({ ...form, sku: e.target.value })}
+        />
+        <textarea
+          placeholder="Details / product options"
+          value={form.options}
+          onChange={(e) => setForm({ ...form, options: e.target.value })}
+        />
+        <input
           type="file"
           accept="image/*"
-          onChange={(e) => setForm({ ...form, image: e.target.files[0] || null })}
+          multiple
+          onChange={(e) => setForm({ ...form, images: e.target.files || [] })}
         />
         <div className="form-actions">
           <button type="submit" disabled={saving}>{saving ? 'Saving...' : editingId ? 'Update' : 'Create'}</button>
