@@ -18,11 +18,14 @@ export default function Cart() {
     setBusyProduct(null);
   };
 
-  const total = items.reduce((sum, item) => sum + Number(item.product.price) * item.quantity, 0);
+  const total = items.reduce(
+    (sum, item) => item.product ? sum + Number(item.product.price) * item.quantity : sum,
+    0
+  );
 
   const renderCartItems = (cartItems, cartUserId, readOnly = false) => (
     <div className="cart-items">
-      {cartItems.map(({ product, quantity }) => (
+      {cartItems.filter(({ product }) => product).map(({ product, quantity }) => (
         <article className="cart-item" key={`${cartUserId || 'mine'}-${product._id}`}>
           <img
             src={imageUrl(product.image) || 'https://via.placeholder.com/160x120?text=Product'}
