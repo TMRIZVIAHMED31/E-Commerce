@@ -8,7 +8,6 @@ const emptyForm = {
   price: '',
   category: '',
   stock: '',
-  color: '',
   colors: '',
   warranty: '',
   options: '',
@@ -17,7 +16,6 @@ const emptyForm = {
 };
 
 const getColorNames = (form) => [...new Set([
-  ...(form.color ? [form.color] : []),
   ...(form.colors || '').split(',').map((item) => item.trim()).filter(Boolean),
 ])];
 
@@ -57,7 +55,7 @@ export default function SellerDashboard() {
     payload.append('price', Number(form.price));
     payload.append('category', form.category);
     payload.append('stock', Number(form.stock || 0));
-    payload.append('color', form.color || '');
+    payload.append('color', '');
     const colorList = (form.colors || '').split(',').map((item) => item.trim()).filter(Boolean);
     payload.append('colors', JSON.stringify(colorList));
     payload.append(
@@ -108,7 +106,6 @@ export default function SellerDashboard() {
       price: p.price,
       category: p.category,
       stock: p.stock,
-      color: p.color || '',
       colors: (p.colors || []).join(', '),
       warranty: p.properties?.warranty || '',
       options: p.details?.options || '',
@@ -198,11 +195,6 @@ export default function SellerDashboard() {
           placeholder="Stock"
           value={form.stock}
           onChange={(e) => setForm({ ...form, stock: e.target.value })}
-        />
-        <input
-          placeholder="Primary color"
-          value={form.color}
-          onChange={(e) => setForm({ ...form, color: e.target.value })}
         />
         <input
           placeholder="Available colors (comma separated, e.g. Black, White, Red)"
