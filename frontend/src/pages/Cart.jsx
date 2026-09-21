@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { apiOrigin } from '../api/axios';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : i
 export default function Cart() {
   const { user } = useAuth();
   const { items, cartGroups, cartLoading, cartError, updateQuantity, removeFromCart } = useCart();
+  const navigate = useNavigate();
   const [busyProduct, setBusyProduct] = useState(null);
 
   const handleQuantityChange = async (productId, value, userId) => {
@@ -26,7 +27,20 @@ export default function Cart() {
   const renderCartItems = (cartItems, cartUserId, readOnly = false) => (
     <div className="cart-items">
       {cartItems.filter(({ product }) => product).map(({ product, quantity }) => (
-        <article className="cart-item" key={`${cartUserId || 'mine'}-${product._id}`}>
+        <article
+          className="cart-item cart-item-clickable"
+          key={`${cartUserId || 'mine'}-${product._id}`}
+          role="link"
+          tabIndex={0}
+          onClick={() => navigate(`/products/${product._id}`)}
+          onKeyDown={(event) => {
+            if (event.target !== event.currentTarget) return;
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              navigate(`/products/${product._id}`);
+            }
+          }}
+        >
           <img
             src={imageUrl(product.image) || 'https://via.placeholder.com/160x120?text=Product'}
             alt={product.name}
@@ -44,16 +58,17 @@ export default function Cart() {
                     min="1"
                     max={product.stock}
                     value={quantity}
+                    onClick={(event) => event.stopPropagation()}
                     onChange={(event) => handleQuantityChange(product._id, event.target.value, cartUserId)}
                   />
                 </label>
-                <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async () => { setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
+                <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async (event) => { event.stopPropagation(); setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
                   Remove
                 </button>
               </div>
             )}
             {readOnly && user?.role === 'admin' && (
-              <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async () => { setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
+              <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async (event) => { event.stopPropagation(); setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
                 Remove item
               </button>
             )}
