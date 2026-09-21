@@ -73,19 +73,28 @@ export default function ProductDetail() {
     return [primary];
   }, [product]);
 
-  const selectedImageIndexForColor = useMemo(() => {
-    if (!product?.colors?.length || !selectedColor?.name) return selectedImage;
-    const selectedName = selectedColor.name.toLowerCase();
-    const matchedIndex = product.colors.findIndex((color) => color.toLowerCase().includes(selectedName) || selectedName.includes(color.toLowerCase()));
-    if (matchedIndex >= 0 && matchedIndex < galleryImages.length) return matchedIndex;
-    return selectedImage;
-  }, [product, selectedColor, galleryImages, selectedImage]);
+  const variantImageMap = useMemo(() => {
+    const map = new Map();
+    const colors = product?.colors?.length ? product.colors : product?.color ? [product.color] : [];
 
-  useEffect(() => {
-    if (selectedImageIndexForColor !== selectedImage) {
-      setSelectedImage(selectedImageIndexForColor);
+    if (colors.length > 0) {
+      colors.forEach((colorName, index) => {
+        const image = galleryImages[index] || galleryImages[0] || fallbackImage;
+        map.set(String(colorName).trim().toLowerCase(), image);
+      });
     }
-  }, [selectedImageIndexForColor, selectedImage]);
+
+    if (!map.has('default')) {
+      map.set('default', galleryImages[0] || fallbackImage);
+    }
+
+    return map;
+  }, [product, galleryImages]);
+
+  const activeProductImage = useMemo(() => {
+    const colorName = (selectedColor?.name || product?.color || 'default').trim().toLowerCase();
+    return variantImageMap.get(colorName) || variantImageMap.get('default') || galleryImages[0] || fallbackImage;
+  }, [selectedColor, product, variantImageMap, galleryImages]);
 
   const productImageStyle = useMemo(() => {
     const name = (selectedColor?.name || '').toLowerCase();
@@ -129,7 +138,7 @@ export default function ProductDetail() {
       <div className="product-page">
         <div className="product-gallery-panel">
           <div className={`gallery-stage ${isZoomed ? 'zoomed' : ''}`} onClick={() => setIsZoomed((value) => !value)}>
-            <img src={galleryImages[selectedImageIndexForColor] || galleryImages[selectedImage] || fallbackImage} alt={product.name} style={productImageStyle} />
+            <img src={activeProductImage} alt={product.name} style={productImageStyle} />
             <button
               type="button"
               className="zoom-toggle"
@@ -178,7 +187,10 @@ export default function ProductDetail() {
                     className={`color-swatch ${selectedColor?.name === color.name ? 'selected' : ''}`}
                     title={color.name}
                     style={{ backgroundColor: color.value }}
-                    onClick={() => setSelectedColor(color)}
+                    onClick={() => {
+                      setSelectedColor(color);
+                      setIsZoomed(false);
+                    }}
                   >
                     <span className="sr-only">{color.name}</span>
                   </button>
