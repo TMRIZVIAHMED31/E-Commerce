@@ -4,6 +4,17 @@ import { useAuth } from './AuthContext';
 
 const CartContext = createContext(null);
 
+const applyCartResponse = (data, setItems, setCartGroups) => {
+  if (Array.isArray(data?.carts)) {
+    setCartGroups(data.carts);
+    setItems([]);
+    return;
+  }
+
+  setItems(data?.items || []);
+  setCartGroups([]);
+};
+
 export function CartProvider({ children }) {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
@@ -20,13 +31,7 @@ export function CartProvider({ children }) {
     api.get('/cart')
       .then(({ data }) => {
         if (!active) return;
-        if (data.carts) {
-          setCartGroups(data.carts);
-          setItems([]);
-        } else {
-          setItems(data.items || []);
-          setCartGroups([]);
-        }
+        applyCartResponse(data, setItems, setCartGroups);
       })
       .catch(() => {
         if (active) {
@@ -48,7 +53,7 @@ export function CartProvider({ children }) {
         productId: product._id,
         quantity: requestedQuantity,
       });
-      setItems(data.items || []);
+      applyCartResponse(data, setItems, setCartGroups);
       return { success: true };
     } catch (err) {
       return { success: false, message: err.response?.data?.message || 'Could not add item to cart.' };
@@ -61,7 +66,7 @@ export function CartProvider({ children }) {
         quantity: requestedQuantity,
         ...(userId ? { userId } : {}),
       });
-      setItems(data.items || []);
+      applyCartResponse(data, setItems, setCartGroups);
       return { success: true };
     } catch (err) {
       return { success: false, message: err.response?.data?.message || 'Could not update cart.' };
@@ -73,8 +78,7 @@ export function CartProvider({ children }) {
       const { data } = await api.delete(`/cart/${productId}`, {
         params: userId ? { userId } : undefined,
       });
-      if (data.carts) setCartGroups(data.carts);
-      else setItems(data.items || []);
+      applyCartResponse(data, setItems, setCartGroups);
     } catch {
       // Keep the current cart visible when a remove request fails.
     }
