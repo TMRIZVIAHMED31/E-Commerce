@@ -27,11 +27,10 @@ const normalizeColorValue = (name) => {
   return match || '#d1d5db';
 };
 
-const defaultColorOptions = [
-  { name: 'Matte Black', value: '#1b1d20' },
-  { name: 'Stone Grey', value: '#d4d4d8' },
-  { name: 'Cloud White', value: '#f4f4f5' },
-];
+const getProductColors = (product) => [...new Set([
+  ...(product?.color ? [product.color] : []),
+  ...(Array.isArray(product?.colors) ? product.colors : []),
+].map((value) => String(value).trim()).filter(Boolean))];
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -44,7 +43,7 @@ export default function ProductDetail() {
   const [cartMessage, setCartMessage] = useState('');
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState(defaultColorOptions[0]);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
@@ -52,8 +51,7 @@ export default function ProductDetail() {
   }, [id]);
 
   const colorOptions = useMemo(() => {
-    const values = product?.colors?.length ? product.colors : product?.color ? [product.color] : [];
-    if (values.length === 0) return defaultColorOptions;
+    const values = getProductColors(product);
     return values.map((value) => ({
       name: value,
       value: normalizeColorValue(value),
@@ -75,7 +73,7 @@ export default function ProductDetail() {
 
   const variantImageMap = useMemo(() => {
     const map = new Map();
-    const colors = product?.colors?.length ? product.colors : product?.color ? [product.color] : [];
+    const colors = getProductColors(product);
 
     if (colors.length > 0) {
       colors.forEach((colorName, index) => {
