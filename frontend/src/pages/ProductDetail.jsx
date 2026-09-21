@@ -73,6 +73,20 @@ export default function ProductDetail() {
     return [primary];
   }, [product]);
 
+  const selectedImageIndexForColor = useMemo(() => {
+    if (!product?.colors?.length || !selectedColor?.name) return selectedImage;
+    const selectedName = selectedColor.name.toLowerCase();
+    const matchedIndex = product.colors.findIndex((color) => color.toLowerCase().includes(selectedName) || selectedName.includes(color.toLowerCase()));
+    if (matchedIndex >= 0 && matchedIndex < galleryImages.length) return matchedIndex;
+    return selectedImage;
+  }, [product, selectedColor, galleryImages, selectedImage]);
+
+  useEffect(() => {
+    if (selectedImageIndexForColor !== selectedImage) {
+      setSelectedImage(selectedImageIndexForColor);
+    }
+  }, [selectedImageIndexForColor, selectedImage]);
+
   const productImageStyle = useMemo(() => {
     const name = (selectedColor?.name || '').toLowerCase();
     if (name.includes('black')) return { filter: 'brightness(0.62) contrast(1.2) saturate(0.9)' };
@@ -115,7 +129,7 @@ export default function ProductDetail() {
       <div className="product-page">
         <div className="product-gallery-panel">
           <div className={`gallery-stage ${isZoomed ? 'zoomed' : ''}`} onClick={() => setIsZoomed((value) => !value)}>
-            <img src={galleryImages[selectedImage]} alt={product.name} style={productImageStyle} />
+            <img src={galleryImages[selectedImageIndexForColor] || galleryImages[selectedImage] || fallbackImage} alt={product.name} style={productImageStyle} />
             <button
               type="button"
               className="zoom-toggle"
