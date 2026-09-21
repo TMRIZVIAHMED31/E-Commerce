@@ -11,6 +11,12 @@ const productSchema = new mongoose.Schema(
     images: [{ type: String, default: [] }],
     color: { type: String, default: '' },
     colors: [{ type: String, default: [] }],
+    colorImages: [
+      {
+        color: { type: String, required: true },
+        images: [{ type: String }],
+      },
+    ],
     properties: {
       warranty: { type: String, default: '' },
       wattage: { type: String, default: '' },

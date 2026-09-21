@@ -13,7 +13,13 @@ const emptyForm = {
   warranty: '',
   options: '',
   images: [],
+  colorImages: {},
 };
+
+const getColorNames = (form) => [...new Set([
+  ...(form.color ? [form.color] : []),
+  ...(form.colors || '').split(',').map((item) => item.trim()).filter(Boolean),
+])];
 
 // Seller: manages ONLY their own products.
 // Admin ("author"): sees and can edit/delete every product in the system.
@@ -67,9 +73,17 @@ export default function SellerDashboard() {
       })
     );
 
-    if (form.images && form.images.length > 0) {
-      Array.from(form.images).forEach((file) => payload.append('images', file));
-    }
+    const imageGroups = getColorNames(form).map((color) => ({
+      color,
+      count: (form.colorImages[color] || []).length,
+    }));
+    const generalImages = form.colorImages.General || [];
+    imageGroups.push({ color: 'General', count: generalImages.length });
+    payload.append('imageGroups', JSON.stringify(imageGroups));
+    getColorNames(form).forEach((color) => {
+      (form.colorImages[color] || []).forEach(({ file }) => payload.append('images', file));
+    });
+    generalImages.forEach(({ file }) => payload.append('images', file));
 
     try {
       if (editingId) {
@@ -99,6 +113,37 @@ export default function SellerDashboard() {
       warranty: p.properties?.warranty || '',
       options: p.details?.options || '',
       images: [],
+      colorImages: {},
+    });
+  };
+
+  const addImages = (color, fileList) => {
+    const validFiles = Array.from(fileList || []).filter((file) => file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024);
+    if (validFiles.length !== Array.from(fileList || []).length) {
+      setError('Only JPG, PNG, or WEBP images up to 5MB are allowed.');
+    }
+    if (validFiles.length === 0) return;
+    setForm((current) => ({
+      ...current,
+      colorImages: {
+        ...current.colorImages,
+        [color]: [
+          ...(current.colorImages[color] || []),
+          ...validFiles.map((file) => ({ file, preview: URL.createObjectURL(file) })),
+        ],
+      },
+    }));
+  };
+
+  const removeImage = (color, index) => {
+    setForm((current) => {
+      const images = current.colorImages[color] || [];
+      const removed = images[index];
+      if (removed?.preview) URL.revokeObjectURL(removed.preview);
+      return {
+        ...current,
+        colorImages: { ...current.colorImages, [color]: images.filter((_, imageIndex) => imageIndex !== index) },
+      };
     });
   };
 
@@ -175,12 +220,57 @@ export default function SellerDashboard() {
           value={form.options}
           onChange={(e) => setForm({ ...form, options: e.target.value })}
         />
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={(e) => setForm({ ...form, images: e.target.files || [] })}
-        />
+        <div className="image-upload-section">
+          <h4>Product Images</h4>
+          {getColorNames(form).length > 0 ? getColorNames(form).map((color) => (
+            <div className="image-variant-group" key={color}>
+              <strong>{color}</strong>
+              <label
+                className="upload-button"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  addImages(color, e.dataTransfer.files);
+                }}
+              >
+                <span>+ Upload Images</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => addImages(color, e.target.files)} />
+              </label>
+              <div className="image-preview-grid">
+                {(form.colorImages[color] || []).map((image, index) => (
+                  <div className="image-preview" key={`${image.file.name}-${index}`}>
+                    <img src={image.preview} alt={`${color} ${index + 1}`} />
+                    <button type="button" aria-label={`Remove ${color} image ${index + 1}`} onClick={() => removeImage(color, index)}>🗑</button>
+                  </div>
+                ))}
+              </div>
+              <p className="upload-hint">Drag &amp; drop images here<br />JPG, PNG, WEBP &bull; Max 5MB</p>
+            </div>
+          )) : (
+            <div className="image-variant-group">
+              <label
+                className="upload-button"
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  addImages('General', e.dataTransfer.files);
+                }}
+              >
+                <span>+ Upload Images</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => addImages('General', e.target.files)} />
+              </label>
+              <div className="image-preview-grid">
+                {(form.colorImages.General || []).map((image, index) => (
+                  <div className="image-preview" key={`${image.file.name}-${index}`}>
+                    <img src={image.preview} alt={`Product ${index + 1}`} />
+                    <button type="button" aria-label={`Remove product image ${index + 1}`} onClick={() => removeImage('General', index)}>🗑</button>
+                  </div>
+                ))}
+              </div>
+              <p className="upload-hint">Drag &amp; drop images here<br />JPG, PNG, WEBP &bull; Max 5MB</p>
+            </div>
+          )}
+        </div>
         <div className="form-actions">
           <button type="submit" disabled={saving}>{saving ? 'Saving...' : editingId ? 'Update' : 'Create'}</button>
           {editingId && <button type="button" onClick={resetForm}>Cancel</button>}

@@ -2,6 +2,27 @@ const Product = require('../models/Product');
 
 const uploadedImagePath = (file) => (file ? `/uploads/${file.filename}` : undefined);
 const uploadedImagePaths = (files = []) => files.map((file) => `/uploads/${file.filename}`);
+const parseImageGroups = (value) => {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const groupUploadedImages = (files, imageGroups) => {
+  let fileIndex = 0;
+  return imageGroups
+    .map((group) => {
+      const count = Math.max(0, Number(group.count) || 0);
+      const images = uploadedImagePaths(files.slice(fileIndex, fileIndex + count));
+      fileIndex += count;
+      return { color: String(group.color || '').trim(), images };
+    })
+    .filter((group) => group.color && group.images.length > 0);
+};
 const parseObjectField = (value, fallback = {}) => {
   if (!value) return fallback;
   try {
@@ -54,6 +75,7 @@ const createProduct = async (req, res) => {
 
     const uploadedFiles = req.files || [];
     const imagePaths = uploadedImagePaths(uploadedFiles);
+    const colorImages = groupUploadedImages(uploadedFiles, parseImageGroups(req.body.imageGroups));
     const parsedProperties = parseObjectField(req.body.properties, {
       warranty: '',
       wattage: '',
@@ -83,6 +105,7 @@ const createProduct = async (req, res) => {
       colors: parsedColors,
       image: imagePaths[0] || '',
       images: imagePaths,
+      colorImages,
       properties: {
         warranty: parsedProperties.warranty || '',
         wattage: parsedProperties.wattage || '',
@@ -125,6 +148,7 @@ const updateProduct = async (req, res) => {
       const uploadedFiles = uploadedImagePaths(req.files);
       product.images = uploadedFiles;
       product.image = uploadedFiles[0] || product.image || '';
+      product.colorImages = groupUploadedImages(req.files, parseImageGroups(req.body.imageGroups));
     }
 
     const parsedProperties = parseObjectField(req.body.properties, product.properties || {

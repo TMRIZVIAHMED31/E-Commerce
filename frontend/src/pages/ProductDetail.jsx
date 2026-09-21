@@ -64,35 +64,21 @@ export default function ProductDetail() {
     }
   }, [colorOptions]);
 
-  const galleryImages = useMemo(() => {
+  const allGalleryImages = useMemo(() => {
     const images = product?.images?.length ? product.images.map((image) => imageUrl(image)).filter(Boolean) : [];
     if (images.length > 0) return images;
     const primary = imageUrl(product?.image) || fallbackImage;
     return [primary];
   }, [product]);
 
-  const variantImageMap = useMemo(() => {
-    const map = new Map();
-    const colors = getProductColors(product);
+  const galleryImages = useMemo(() => {
+    const selectedName = selectedColor?.name?.trim().toLowerCase();
+    const variant = product?.colorImages?.find((group) => group.color?.trim().toLowerCase() === selectedName);
+    const variantImages = variant?.images?.map((image) => imageUrl(image)).filter(Boolean) || [];
+    return variantImages.length > 0 ? variantImages : allGalleryImages;
+  }, [product, selectedColor, allGalleryImages]);
 
-    if (colors.length > 0) {
-      colors.forEach((colorName, index) => {
-        const image = galleryImages[index] || galleryImages[0] || fallbackImage;
-        map.set(String(colorName).trim().toLowerCase(), image);
-      });
-    }
-
-    if (!map.has('default')) {
-      map.set('default', galleryImages[0] || fallbackImage);
-    }
-
-    return map;
-  }, [product, galleryImages]);
-
-  const activeProductImage = useMemo(() => {
-    const colorName = (selectedColor?.name || product?.color || 'default').trim().toLowerCase();
-    return variantImageMap.get(colorName) || variantImageMap.get('default') || galleryImages[0] || fallbackImage;
-  }, [selectedColor, product, variantImageMap, galleryImages]);
+  const activeProductImage = galleryImages[selectedImage] || galleryImages[0] || fallbackImage;
 
   const startChat = async () => {
     try {
@@ -176,6 +162,7 @@ export default function ProductDetail() {
                     style={{ backgroundColor: color.value }}
                     onClick={() => {
                       setSelectedColor(color);
+                      setSelectedImage(0);
                       setIsZoomed(false);
                     }}
                   >
