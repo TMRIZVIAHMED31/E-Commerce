@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import ChatLogo from '../components/ChatLogo';
 
 const formatDateTime = (value) => (
   value
@@ -33,7 +34,7 @@ export default function Inbox() {
 
   return (
     <div className="container narrow">
-      <h2>Chats</h2>
+      <h2 className="chat-heading"><ChatLogo /> Chats</h2>
 
       {user.role === 'user' && sellers.length > 0 && (
         <div className="seller-list">

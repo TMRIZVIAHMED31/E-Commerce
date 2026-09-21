@@ -4,6 +4,7 @@ import api from '../api/axios';
 import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import ChatLogo from '../components/ChatLogo';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 const fallbackImage = 'https://images.unsplash.com/photo-1585518419759-7fe2e0fbf8a6?auto=format&fit=crop&w=900&q=80';
@@ -230,7 +231,10 @@ export default function ProductDetail() {
           )}
 
           {user && user.role === 'user' && (
-            <button type="button" className="chat-button" onClick={startChat}>Chat with seller</button>
+            <button type="button" className="chat-button" onClick={startChat}>
+              <ChatLogo className="chat-logo-button" />
+              Chat with seller
+            </button>
           )}
           {!user && <p className="muted">Login as a buyer to chat with the seller.</p>}
           {isOwnProduct && <p className="muted">This is your own product listing.</p>}

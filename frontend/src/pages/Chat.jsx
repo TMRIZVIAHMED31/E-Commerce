@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
+import ChatLogo from '../components/ChatLogo';
 
 const formatDateTime = (value) => (
   value
@@ -68,7 +69,7 @@ export default function Chat() {
 
   return (
     <div className="container narrow chat-page">
-      <h2>Chat {!connected && <span className="muted">(connecting...)</span>}</h2>
+      <h2 className="chat-heading"><ChatLogo /> Chat {!connected && <span className="muted">(connecting...)</span>}</h2>
 
       <div className="messages">
         {messages.map((m) => (

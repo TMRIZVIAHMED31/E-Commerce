@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import ChatLogo from './ChatLogo';
 import api from '../api/axios';
 
 export default function Navbar() {
@@ -83,10 +84,17 @@ export default function Navbar() {
                 )}
                 {user && (
                   <Link to="/inbox" onClick={() => setMenuOpen(false)}>
-                    Chat <span className="menu-notification">{chatCount}</span>
+                    <ChatLogo className="chat-logo-menu" />
+                    <span>Chat</span>
+                    <span className="menu-notification">{chatCount}</span>
                   </Link>
                 )}
-                {!user && <Link to="/login" onClick={() => setMenuOpen(false)}>Chat</Link>}
+                {!user && (
+                  <Link to="/login" onClick={() => setMenuOpen(false)}>
+                    <ChatLogo className="chat-logo-menu" />
+                    <span>Chat</span>
+                  </Link>
+                )}
               </div>
             </aside>
           </>
