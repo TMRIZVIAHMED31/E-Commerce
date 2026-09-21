@@ -11,10 +11,6 @@ const emptyForm = {
   color: '',
   colors: '',
   warranty: '',
-  wattage: '',
-  capacity: '',
-  voltage: '',
-  sku: '',
   options: '',
   images: [],
 };
@@ -61,15 +57,11 @@ export default function SellerDashboard() {
       'properties',
       JSON.stringify({
         warranty: form.warranty,
-        wattage: form.wattage,
-        capacity: form.capacity,
-        voltage: form.voltage,
       })
     );
     payload.append(
       'details',
       JSON.stringify({
-        sku: form.sku,
         options: form.options,
       })
     );
@@ -104,10 +96,6 @@ export default function SellerDashboard() {
       color: p.color || '',
       colors: (p.colors || []).join(', '),
       warranty: p.properties?.warranty || '',
-      wattage: p.properties?.wattage || '',
-      capacity: p.properties?.capacity || '',
-      voltage: p.properties?.voltage || '',
-      sku: p.details?.sku || '',
       options: p.details?.options || '',
       images: [],
     });
@@ -180,30 +168,6 @@ export default function SellerDashboard() {
           placeholder="Warranty"
           value={form.warranty}
           onChange={(e) => setForm({ ...form, warranty: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Wattage"
-          value={form.wattage}
-          onChange={(e) => setForm({ ...form, wattage: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Capacity"
-          value={form.capacity}
-          onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Voltage"
-          value={form.voltage}
-          onChange={(e) => setForm({ ...form, voltage: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="SKU"
-          value={form.sku}
-          onChange={(e) => setForm({ ...form, sku: e.target.value })}
         />
         <textarea
           placeholder="Details / product options"
