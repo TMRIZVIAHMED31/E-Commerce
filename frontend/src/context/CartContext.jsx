@@ -19,25 +19,33 @@ export function CartProvider({ children }) {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [cartGroups, setCartGroups] = useState([]);
+  const [cartLoading, setCartLoading] = useState(false);
+  const [cartError, setCartError] = useState('');
 
   useEffect(() => {
     if (!user) {
       setItems([]);
       setCartGroups([]);
+      setCartError('');
       return;
     }
 
     let active = true;
+    setCartLoading(true);
+    setCartError('');
     api.get('/cart')
       .then(({ data }) => {
         if (!active) return;
         applyCartResponse(data, setItems, setCartGroups);
+        setCartError('');
       })
-      .catch(() => {
+      .catch((err) => {
         if (active) {
-          setItems([]);
-          setCartGroups([]);
+          setCartError(err.response?.data?.message || 'Could not connect to the cart service.');
         }
+      })
+      .finally(() => {
+        if (active) setCartLoading(false);
       });
 
     return () => {
@@ -54,6 +62,7 @@ export function CartProvider({ children }) {
         quantity: requestedQuantity,
       });
       applyCartResponse(data, setItems, setCartGroups);
+      setCartError('');
       return { success: true };
     } catch (err) {
       return { success: false, message: err.response?.data?.message || 'Could not add item to cart.' };
@@ -95,7 +104,7 @@ export function CartProvider({ children }) {
   );
 
   return (
-    <CartContext.Provider value={{ items, cartGroups, cartCount, addToCart, updateQuantity, removeFromCart }}>
+    <CartContext.Provider value={{ items, cartGroups, cartCount, cartLoading, cartError, addToCart, updateQuantity, removeFromCart }}>
       {children}
     </CartContext.Provider>
   );

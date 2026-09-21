@@ -8,7 +8,7 @@ const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : i
 
 export default function Cart() {
   const { user } = useAuth();
-  const { items, cartGroups, updateQuantity, removeFromCart } = useCart();
+  const { items, cartGroups, cartLoading, cartError, updateQuantity, removeFromCart } = useCart();
   const [busyProduct, setBusyProduct] = useState(null);
 
   const handleQuantityChange = async (productId, value, userId) => {
@@ -71,7 +71,15 @@ export default function Cart() {
         <Link to="/" className="text-link">Continue shopping</Link>
       </div>
 
-      {cartGroups.length > 0 ? (
+      {cartLoading ? (
+        <p className="center">Loading your cart...</p>
+      ) : cartError ? (
+        <div className="empty-state">
+          <h2>Cart unavailable</h2>
+          <p className="error">{cartError}</p>
+          <button type="button" className="btn primary-btn" onClick={() => window.location.reload()}>Try again</button>
+        </div>
+      ) : cartGroups.length > 0 ? (
         <div className="cart-groups">
           <p className="muted">{user?.role === 'admin' ? 'All buyer carts' : 'Buyer carts (read-only)'}</p>
           {cartGroups.map((cart) => (
