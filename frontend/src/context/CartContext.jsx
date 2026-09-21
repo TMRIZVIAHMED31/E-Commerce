@@ -96,10 +96,10 @@ export function CartProvider({ children }) {
   const cartCount = useMemo(
     () => (cartGroups.length
       ? cartGroups.reduce(
-        (total, cart) => total + cart.items.reduce((cartTotal, item) => cartTotal + item.quantity, 0),
+        (total, cart) => total + cart.items.filter((item) => item.product).length,
         0
       )
-      : items.reduce((total, item) => total + item.quantity, 0)),
+      : items.filter((item) => item.product).length),
     [items, cartGroups]
   );
 
