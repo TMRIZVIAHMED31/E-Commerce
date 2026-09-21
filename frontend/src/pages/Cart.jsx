@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { apiOrigin } from '../api/axios';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import CartLogo from '../components/CartLogo';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
@@ -70,7 +69,7 @@ export default function Cart() {
       <div className="page-heading">
         <div>
           <p className="eyebrow">Your order</p>
-          <h1 className="cart-heading"><CartLogo /> Shopping cart</h1>
+          <h1>Shopping cart</h1>
         </div>
         <Link to="/" className="text-link">Continue shopping</Link>
       </div>
