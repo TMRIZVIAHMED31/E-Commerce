@@ -10,6 +10,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatCount, setChatCount] = useState(0);
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark-theme', darkMode);
+    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
 
   useEffect(() => {
     if (!user) {
@@ -61,6 +67,15 @@ export default function Navbar() {
               </div>
               <div className="menu-drawer-links">
                 <Link to="/" className="active" onClick={() => setMenuOpen(false)}>Home</Link>
+                <button
+                  type="button"
+                  className="menu-theme-toggle"
+                  onClick={() => setDarkMode((current) => !current)}
+                  aria-label={`Switch to ${darkMode ? 'light' : 'dark'} mode`}
+                >
+                  <span aria-hidden="true">{darkMode ? '☀' : '☾'}</span>
+                  {darkMode ? 'Light Mode' : 'Dark Mode'}
+                </button>
                 {user?.role === 'user' && (
                   <Link to="/cart" onClick={() => setMenuOpen(false)}>
                     Cart <span className="menu-notification">{cartCount}</span>
