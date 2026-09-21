@@ -146,7 +146,9 @@ export default function ProductDetail() {
           <div className="price-line">${Number(product.price).toFixed(2)}</div>
 
           <div className="stock-row">
-            <span className="stock-badge">✓ In Stock</span>
+            <span className={`stock-badge ${product.stock < 1 ? 'out-of-stock' : ''}`}>
+              {product.stock > 0 ? `✓ In Stock: ${product.stock} available` : 'Out of stock'}
+            </span>
           </div>
 
           {colorOptions.length > 0 && (
