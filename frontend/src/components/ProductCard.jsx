@@ -1,25 +1,10 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { apiOrigin } from '../api/axios';
-import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
 export default function ProductCard({ product }) {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { addToCart } = useCart();
-  const [message, setMessage] = useState('');
-  const [adding, setAdding] = useState(false);
-
-  const handleAddToCart = async () => {
-    if (adding) return;
-    setAdding(true);
-    const result = await addToCart(product);
-    setMessage(result.success ? 'Added to cart.' : result.message);
-    setAdding(false);
-  };
 
   const openProduct = () => {
     navigate(`/products/${product._id}`);
@@ -42,20 +27,6 @@ export default function ProductCard({ product }) {
       <h3>{product.name}</h3>
       <p className="price">${Number(product.price).toFixed(2)}</p>
       <p className="muted">Seller: {product.seller?.name || 'Unknown'}</p>
-      <Link to={`/products/${product._id}`} className="btn">View</Link>
-      {user?.role === 'user' && (
-        <button
-          className="btn card-cart-button"
-          disabled={product.stock < 1}
-          onClick={(event) => {
-            event.stopPropagation();
-            handleAddToCart();
-          }}
-        >
-          {product.stock < 1 ? 'Out of stock' : adding ? 'Adding...' : 'Add to Cart'}
-        </button>
-      )}
-      {message && <p className="cart-message" role="status">{message}</p>}
     </div>
   );
 }
