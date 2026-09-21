@@ -1,7 +1,5 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const {
   getProducts,
   getProductById,
@@ -13,19 +11,8 @@ const {
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
-const uploadDirectory = path.join(__dirname, '..', 'uploads');
-fs.mkdirSync(uploadDirectory, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: uploadDirectory,
-  filename: (req, file, callback) => {
-    const extension = path.extname(file.originalname).toLowerCase();
-    callback(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`);
-  },
-});
-
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, callback) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];

@@ -1,7 +1,7 @@
 const Product = require('../models/Product');
+const { uploadImage } = require('../config/cloudinary');
 
-const uploadedImagePath = (file) => (file ? `/uploads/${file.filename}` : undefined);
-const uploadedImagePaths = (files = []) => files.map((file) => `/uploads/${file.filename}`);
+const uploadedImagePaths = async (files = []) => Promise.all(files.map(uploadImage));
 const parseImageGroups = (value) => {
   if (!value) return [];
   try {
@@ -12,12 +12,12 @@ const parseImageGroups = (value) => {
   }
 };
 
-const groupUploadedImages = (files, imageGroups) => {
+const groupUploadedImages = (imagePaths, imageGroups) => {
   let fileIndex = 0;
   return imageGroups
     .map((group) => {
       const count = Math.max(0, Number(group.count) || 0);
-      const images = uploadedImagePaths(files.slice(fileIndex, fileIndex + count));
+      const images = imagePaths.slice(fileIndex, fileIndex + count);
       fileIndex += count;
       return { color: String(group.color || '').trim(), images };
     })
@@ -74,8 +74,8 @@ const createProduct = async (req, res) => {
     }
 
     const uploadedFiles = req.files || [];
-    const imagePaths = uploadedImagePaths(uploadedFiles);
-    const colorImages = groupUploadedImages(uploadedFiles, parseImageGroups(req.body.imageGroups));
+    const imagePaths = await uploadedImagePaths(uploadedFiles);
+    const colorImages = groupUploadedImages(imagePaths, parseImageGroups(req.body.imageGroups));
     const parsedProperties = parseObjectField(req.body.properties, {
       warranty: '',
       wattage: '',
@@ -145,10 +145,10 @@ const updateProduct = async (req, res) => {
     });
 
     if (req.files && req.files.length > 0) {
-      const uploadedFiles = uploadedImagePaths(req.files);
+      const uploadedFiles = await uploadedImagePaths(req.files);
       product.images = uploadedFiles;
       product.image = uploadedFiles[0] || product.image || '';
-      product.colorImages = groupUploadedImages(req.files, parseImageGroups(req.body.imageGroups));
+      product.colorImages = groupUploadedImages(uploadedFiles, parseImageGroups(req.body.imageGroups));
     }
 
     const parsedProperties = parseObjectField(req.body.properties, product.properties || {

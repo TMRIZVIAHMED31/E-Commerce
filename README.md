@@ -79,7 +79,7 @@ npm run dev                 # starts on http://localhost:5173
 ## Notes / what's intentionally simple
 
 This is a learning/internship-scope project, not production-hardened:
-- Product images are plain URL strings (no file upload/storage pipeline).
+- Product images are uploaded to Cloudinary and their durable HTTPS URLs are stored in MongoDB. Configure the three `CLOUDINARY_*` variables in `backend/.env`.
 - No payment/checkout flow — the focus is roles, CRUD, auth, and real-time chat.
 - No pagination UI on the frontend beyond the API supporting `page`/`limit`.
 - GraphQL (an optional advanced-level task) isn't included since this build uses REST throughout.

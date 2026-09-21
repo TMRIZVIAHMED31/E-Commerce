@@ -61,6 +61,9 @@ The project already uses the correct production-friendly configuration points:
    MONGO_DB_NAME=ecommerce_mern
    JWT_SECRET=<long-random-secret>
    CLIENT_ORIGIN=https://<your-vercel-project>.vercel.app
+   CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
+   CLOUDINARY_API_KEY=<your-cloudinary-api-key>
+   CLOUDINARY_API_SECRET=<your-cloudinary-api-secret>
    NODE_ENV=production
    ADMIN_EMAIL=<your-admin-email>
    ADMIN_PASSWORD=<strong-admin-password>
@@ -72,13 +75,13 @@ The project already uses the correct production-friendly configuration points:
 6. Copy the Render URL, for example:
 
    ```text
-   https://ecommerce-api-xxxx.onrender.com
+   https://e-commerce-lk03.onrender.com
    ```
 
 7. Verify the backend before deploying the frontend:
 
    ```text
-   https://ecommerce-api-xxxx.onrender.com/api/health
+   https://e-commerce-lk03.onrender.com/api/health
    ```
 
    It should return:
@@ -115,7 +118,7 @@ Remove the temporary production `.env` afterward. Alternatively, run `npm run se
 4. Before deploying, add these Vercel environment variables for **Production** (and Preview if you want preview deployments to work):
 
    ```text
-   VITE_API_URL=https://ecommerce-api-xxxx.onrender.com/api
+   VITE_API_URL=https://e-commerce-lk03.onrender.com/api
    ```
 
    `VITE_API_URL` must include `/api`; `VITE_SOCKET_URL` must not include `/api`.
@@ -175,7 +178,7 @@ This is expected on Render's free plan when the service has been sleeping. Subse
 
 ### Product images are not persistent
 
-This project stores product image values as URLs; it does not upload image files. Use publicly reachable image URLs. Do not rely on files written to the Render filesystem because free service storage is ephemeral.
+Product uploads are stored in Cloudinary and the returned HTTPS URLs are saved in MongoDB. Confirm all three `CLOUDINARY_*` variables are set in Render, then redeploy the backend. Do not remove or rotate the Cloudinary account that owns the product images.
 
 ## 8. Redeploying changes
 
