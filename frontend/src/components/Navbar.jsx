@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import api from '../api/axios';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const { cartCount } = useCart();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatCount, setChatCount] = useState(0);
@@ -59,6 +61,11 @@ export default function Navbar() {
               </div>
               <div className="menu-drawer-links">
                 <Link to="/" className="active" onClick={() => setMenuOpen(false)}>Home</Link>
+                {user?.role === 'user' && (
+                  <Link to="/cart" onClick={() => setMenuOpen(false)}>
+                    Cart <span className="menu-notification">{cartCount}</span>
+                  </Link>
+                )}
                 {user && (
                   <Link to="/inbox" onClick={() => setMenuOpen(false)}>
                     Chat <span className="menu-notification">{chatCount}</span>
