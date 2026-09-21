@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { apiOrigin } from '../api/axios';
@@ -73,6 +73,17 @@ export default function ProductDetail() {
     return [primary];
   }, [product]);
 
+  const productImageStyle = useMemo(() => {
+    const name = (selectedColor?.name || '').toLowerCase();
+    if (name.includes('black')) return { filter: 'brightness(0.62) contrast(1.2) saturate(0.9)' };
+    if (name.includes('grey') || name.includes('silver')) return { filter: 'grayscale(0.1) brightness(1.08) saturate(0.7)' };
+    if (name.includes('white')) return { filter: 'brightness(1.18) contrast(0.95) saturate(0.8)' };
+    if (name.includes('red')) return { filter: 'hue-rotate(0deg) saturate(1.25) brightness(1.04)' };
+    if (name.includes('blue')) return { filter: 'hue-rotate(210deg) saturate(1.15) brightness(0.96)' };
+    if (name.includes('green')) return { filter: 'hue-rotate(118deg) saturate(1.22) brightness(0.95)' };
+    return { filter: 'none' };
+  }, [selectedColor]);
+
   const startChat = async () => {
     try {
       const { data } = await api.post('/chat/conversations', {
@@ -104,11 +115,15 @@ export default function ProductDetail() {
       <div className="product-page">
         <div className="product-gallery-panel">
           <div className={`gallery-stage ${isZoomed ? 'zoomed' : ''}`} onClick={() => setIsZoomed((value) => !value)}>
-            <img src={galleryImages[selectedImage]} alt={product.name} />
-            <button type="button" className="zoom-toggle" onClick={(event) => {
-              event.stopPropagation();
-              setIsZoomed((value) => !value);
-            }}>
+            <img src={galleryImages[selectedImage]} alt={product.name} style={productImageStyle} />
+            <button
+              type="button"
+              className="zoom-toggle"
+              onClick={(event) => {
+                event.stopPropagation();
+                setIsZoomed((value) => !value);
+              }}
+            >
               {isZoomed ? 'Click to zoom out' : 'Click to zoom'}
             </button>
           </div>
@@ -185,10 +200,10 @@ export default function ProductDetail() {
                 {Object.entries(product.properties || {}).map(([key, value]) => {
                   if (!value) return null;
                   return (
-                    <>
-                      <span className="key" key={`${key}-label`}>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                      <span className="value" key={`${key}-value`}>{value}</span>
-                    </>
+                    <Fragment key={key}>
+                      <span className="key">{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="value">{value}</span>
+                    </Fragment>
                   );
                 })}
               </div>
@@ -202,10 +217,10 @@ export default function ProductDetail() {
                 {Object.entries(product.details || {}).map(([key, value]) => {
                   if (!value) return null;
                   return (
-                    <>
-                      <span className="key" key={`${key}-label`}>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
-                      <span className="value" key={`${key}-value`}>{value}</span>
-                    </>
+                    <Fragment key={key}>
+                      <span className="key">{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="value">{value}</span>
+                    </Fragment>
                   );
                 })}
               </div>
