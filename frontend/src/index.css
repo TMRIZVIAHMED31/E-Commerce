@@ -146,6 +146,12 @@ html.dark-theme .form input,
 html.dark-theme .form textarea,
 html.dark-theme .form select,
 html.dark-theme .search-bar input { background: #111827; border-color: #4b5563; color: #f3f4f6; }
+html.dark-theme .messages,
+html.dark-theme .conversation-list li,
+html.dark-theme .seller-btn { background: #1f2937; color: #f3f4f6; }
+html.dark-theme .message.theirs { background: #374151; color: #f3f4f6; }
+html.dark-theme .chat-input input { background: #111827; border-color: #4b5563; color: #f3f4f6; }
+html.dark-theme .seller-btn { border-color: #60a5fa; color: #93c5fd; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .detail-img { width: 100%; max-height: 320px; object-fit: cover; border-radius: 10px; }
 .purchase-panel { margin: 20px 0; padding: 16px; background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
