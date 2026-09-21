@@ -140,33 +140,39 @@ export default function ProductDetail() {
             <p>{product.description}</p>
           </div>
 
-          <div className="detail-box">
-            <h3>Properties</h3>
-            <div className="spec-grid">
-              <span className="key">Warranty</span>
-              <span className="value">2 Years</span>
-
-              <span className="key">Wattage</span>
-              <span className="value">1800W</span>
-
-              <span className="key">Capacity</span>
-              <span className="value">6.2L</span>
-
-              <span className="key">Voltage</span>
-              <span className="value">220-240V</span>
+          {(product.properties && Object.values(product.properties).some(Boolean)) && (
+            <div className="detail-box">
+              <h3>Properties</h3>
+              <div className="spec-grid">
+                {Object.entries(product.properties || {}).map(([key, value]) => {
+                  if (!value) return null;
+                  return (
+                    <>
+                      <span className="key" key={`${key}-label`}>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="value" key={`${key}-value`}>{value}</span>
+                    </>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
-          <div className="detail-box">
-            <h3>Details</h3>
-            <div className="spec-grid">
-              <span className="key">SKU</span>
-              <span className="value">DIGITAL-AIR-FRYER-6L-MATTE-BLACK</span>
-
-              <span className="key">Options</span>
-              <span className="value">Color: {selectedColor.name}</span>
+          {(product.details && Object.values(product.details).some(Boolean)) && (
+            <div className="detail-box">
+              <h3>Details</h3>
+              <div className="spec-grid">
+                {Object.entries(product.details || {}).map(([key, value]) => {
+                  if (!value) return null;
+                  return (
+                    <>
+                      <span className="key" key={`${key}-label`}>{key.charAt(0).toUpperCase() + key.slice(1)}</span>
+                      <span className="value" key={`${key}-value`}>{value}</span>
+                    </>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {user && user.role === 'user' && (
             <button type="button" className="chat-button" onClick={startChat}>Chat with seller</button>
