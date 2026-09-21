@@ -78,7 +78,6 @@ export default function Navbar() {
         )}
       </div>
       <div className="nav-links">
-        <Link to="/">Products</Link>
         {user && (user.role === 'seller' || user.role === 'admin') && (
           <Link to="/seller">Seller Dashboard</Link>
         )}
