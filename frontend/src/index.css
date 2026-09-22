@@ -84,9 +84,9 @@ a { text-decoration: none; color: inherit; }
 .product-shell { max-width: 1280px; }
 .product-page { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 46px; align-items: start; padding: 18px 0 30px; }
 .product-gallery-panel { background: #f2efe8; border-radius: 18px; padding: 18px; }
-.gallery-stage { position: relative; display: grid; place-items: center; min-height: 460px; background: #f4f0ea; border-radius: 18px; overflow: hidden; cursor: zoom-in; }
+.gallery-stage { position: relative; display: grid; place-items: center; min-height: 360px; background: #f4f0ea; border-radius: 18px; overflow: hidden; cursor: zoom-in; }
 .gallery-stage.zoomed { cursor: zoom-out; }
-.gallery-stage img { width: 78%; max-width: 500px; max-height: 410px; object-fit: contain; transition: transform 0.25s ease; }
+.gallery-stage img { width: 78%; max-width: 500px; max-height: 320px; object-fit: contain; transition: transform 0.25s ease; }
 .gallery-stage.zoomed img { transform: scale(1.7); }
 .zoom-toggle { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); border: 1px solid rgba(17, 24, 39, 0.12); background: rgba(255,255,255,0.75); color: #1f2937; border-radius: 999px; padding: 8px 14px; font-size: 0.8rem; cursor: pointer; backdrop-filter: blur(3px); }
 .thumbnail-row { display: flex; gap: 12px; margin-top: 18px; }
