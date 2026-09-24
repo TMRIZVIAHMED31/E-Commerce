@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 // Admin ("author") user management. Product management for admin lives in
 // SellerDashboard (admin sees ALL products there and can edit/delete any of them).
 export default function AdminDashboard() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
@@ -66,13 +68,15 @@ export default function AdminDashboard() {
               <td>{u.role}</td>
               <td>
                 {u.role !== 'admin' && (
-                  <>
-                    <select value={u.role} onChange={(e) => handleRoleChange(u._id, e.target.value)}>
-                      <option value="user">user</option>
-                      <option value="seller">seller</option>
-                    </select>
-                    <button type="button" disabled={deletingId === u._id} onClick={() => handleDelete(u._id)}>{deletingId === u._id ? 'Deleting...' : 'Delete'}</button>
-                  </>
+                  <select value={u.role} onChange={(e) => handleRoleChange(u._id, e.target.value)}>
+                    <option value="user">user</option>
+                    <option value="seller">seller</option>
+                  </select>
+                )}
+                {u._id !== (currentUser?._id || currentUser?.id) && (
+                  <button type="button" disabled={deletingId === u._id} onClick={() => handleDelete(u._id)}>
+                    {deletingId === u._id ? 'Deleting...' : 'Delete'}
+                  </button>
                 )}
               </td>
             </tr>
