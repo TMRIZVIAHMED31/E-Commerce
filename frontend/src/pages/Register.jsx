@@ -43,7 +43,6 @@ export default function Register() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
-          <CardDescription>Register to shop, chat, or list products.</CardDescription>
           <CardAction>
             <Button type="button" variant="link" onClick={() => navigate('/login')}>
               Log In
@@ -107,8 +106,8 @@ export default function Register() {
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
                 >
-                  <option value="user">Buyer (browse & chat)</option>
-                  <option value="seller">Seller (list products)</option>
+                  <option value="user">Buyer</option>
+                  <option value="seller">Seller</option>
                 </select>
               </div>
             </div>
