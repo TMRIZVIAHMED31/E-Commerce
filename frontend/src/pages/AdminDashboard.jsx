@@ -3,6 +3,13 @@ import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
+const payments = [
+  { id: '728ed52f', amount: 100, status: 'pending', email: 'm@example.com' },
+  { id: '489e1d42', amount: 125, status: 'processing', email: 'example@gmail.com' },
+  { id: 'a91c7f20', amount: 250, status: 'success', email: 'buyer@gmail.com' },
+  { id: 'c42b6e18', amount: 75, status: 'failed', email: 'customer@gmail.com' },
+];
+
 // Admin ("author") user management. Product management for admin lives in
 // SellerDashboard (admin sees ALL products there and can edit/delete any of them).
 export default function AdminDashboard() {
@@ -83,6 +90,35 @@ export default function AdminDashboard() {
           ))}
         </tbody>
       </table>
+
+      <section className="admin-payments">
+        <h3>Payments</h3>
+        <p className="muted">Recent payment activity.</p>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Payment ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map((payment) => (
+              <tr key={payment.id}>
+                <td>{payment.id}</td>
+                <td>${payment.amount.toFixed(2)}</td>
+                <td>
+                  <span className={`payment-status payment-status-${payment.status}`}>
+                    {payment.status}
+                  </span>
+                </td>
+                <td>{payment.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }
