@@ -94,14 +94,18 @@ export default function Chat() {
           const avatarUrl = m.sender?.avatar || m.sender?.image;
 
           return (
-            <Message key={m._id} align={isMine ? 'end' : 'start'}>
+            <Message
+              key={m._id}
+              align={isMine ? 'end' : 'start'}
+              className={isMine ? 'justify-end' : 'justify-start'}
+            >
               <MessageAvatar>
                 <Avatar>
                   {avatarUrl && <AvatarImage src={avatarUrl} alt={senderName} />}
                   <AvatarFallback>{initialsFor(senderName)}</AvatarFallback>
                 </Avatar>
               </MessageAvatar>
-              <MessageContent>
+              <MessageContent className={isMine ? 'items-end' : 'items-start'}>
                 <span className="sender">{senderName}</span>
                 <Bubble variant={isMine ? 'default' : 'muted'}>
                   <BubbleContent>{m.text}</BubbleContent>
