@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
+import { Button } from '@/components/ui/button';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -43,7 +44,7 @@ export default function Home() {
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search products..."
         />
-        <button type="submit">Search</button>
+        <Button type="submit">Search</Button>
       </form>
 
       {loading ? (
