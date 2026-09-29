@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 
@@ -46,9 +45,7 @@ export default function AdminDashboard() {
   return (
     <div className="container">
       <h2>Admin Dashboard</h2>
-      <p className="muted">
-        Manage users here. Manage <Link to="/seller">all products</Link> from the Seller Dashboard link (admins see every seller's products there).
-      </p>
+     
       {error && <p className="error">{error}</p>}
 
       <table className="table">
