@@ -96,7 +96,7 @@ export default function Chat() {
           return (
             <Message
               key={m._id}
-              align={isMine ? 'end' : 'start'}
+              align="start"
               className={isMine ? 'justify-end' : 'justify-start'}
             >
               <MessageAvatar>
@@ -105,9 +105,15 @@ export default function Chat() {
                   <AvatarFallback>{initialsFor(senderName)}</AvatarFallback>
                 </Avatar>
               </MessageAvatar>
-              <MessageContent className={isMine ? 'items-end' : 'items-start'}>
+              <MessageContent
+                className={isMine ? 'items-end' : 'items-start'}
+                style={{ alignItems: isMine ? 'flex-end' : 'flex-start' }}
+              >
                 <span className="sender">{senderName}</span>
-                <Bubble variant={isMine ? 'default' : 'muted'}>
+                <Bubble
+                  variant={isMine ? 'default' : 'muted'}
+                  className={isMine ? 'self-end' : 'self-start'}
+                >
                   <BubbleContent>{m.text}</BubbleContent>
                 </Bubble>
                 <MessageFooter>
