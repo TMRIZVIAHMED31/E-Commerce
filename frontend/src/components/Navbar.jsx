@@ -22,7 +22,6 @@ import {
   CommandDialog,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
   CommandSeparator,
@@ -88,7 +87,6 @@ export default function Navbar() {
         <Link to="/" className="brand">ShopMERN</Link>
         <CommandDialog open={menuOpen} onOpenChange={setMenuOpen} title="ShopMERN menu">
           <Command>
-            <CommandInput placeholder="Search the menu..." />
             <CommandList>
               <CommandEmpty>No matching menu item.</CommandEmpty>
               <CommandGroup heading="Navigate">
