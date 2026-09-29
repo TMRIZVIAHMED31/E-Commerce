@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useTheme } from '../context/ThemeContext';
 import api from '../api/axios';
 import { Button } from './ui/button';
 import {
@@ -30,15 +31,11 @@ import {
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatCount, setChatCount] = useState(0);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark-theme', darkMode);
-    localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-  }, [darkMode]);
+  const darkMode = theme === 'dark';
 
   useEffect(() => {
     if (!user) {
@@ -131,7 +128,7 @@ export default function Navbar() {
                     <span>Admin</span>
                   </CommandItem>
                 )}
-                <CommandItem onSelect={() => runMenuAction(() => setDarkMode((current) => !current))}>
+                <CommandItem onSelect={() => runMenuAction(() => setTheme(darkMode ? 'light' : 'dark'))}>
                   {darkMode ? <SunIcon /> : <MoonIcon />}
                   <span>{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
                 </CommandItem>

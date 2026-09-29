@@ -5,6 +5,7 @@ import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -12,9 +13,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <CartProvider>
-          <SocketProvider>
-            <App />
-          </SocketProvider>
+          <ThemeProvider>
+            <SocketProvider>
+              <App />
+            </SocketProvider>
+          </ThemeProvider>
         </CartProvider>
       </AuthProvider>
     </BrowserRouter>
