@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import { Button } from '@/components/ui/button';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -52,12 +59,26 @@ export default function Home() {
       ) : error ? (
         <p role="alert">{error}</p>
       ) : (
-        <div className="grid">
-          {products.length === 0 && <p>No products found.</p>}
-          {products.map((p) => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-        </div>
+        products.length === 0 ? (
+          <p>No products found.</p>
+        ) : (
+          <Carousel
+            className="product-list-carousel"
+            opts={{ loop: products.length > 3, slidesToScroll: 1 }}
+          >
+            <CarouselContent className="product-list-carousel-content">
+              {products.map((p) => (
+                <CarouselItem key={p._id} className="product-list-carousel-item">
+                  <ProductCard product={p} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {products.length > 3 && <>
+              <CarouselPrevious className="product-list-carousel-previous" />
+              <CarouselNext className="product-list-carousel-next" />
+            </>}
+          </Carousel>
+        )
       )}
     </div>
   );
