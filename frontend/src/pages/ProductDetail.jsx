@@ -53,6 +53,7 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [zoomOrigin, setZoomOrigin] = useState('center center');
   const [carouselApi, setCarouselApi] = useState(null);
 
   useEffect(() => {
@@ -137,6 +138,17 @@ export default function ProductDetail() {
     setAdding(false);
   };
 
+  const toggleZoom = (event) => {
+    if (!isZoomed) {
+      const imageElement = event.currentTarget.querySelector('img');
+      const bounds = imageElement?.getBoundingClientRect() || event.currentTarget.getBoundingClientRect();
+      const x = Math.min(100, Math.max(0, ((event.clientX - bounds.left) / bounds.width) * 100));
+      const y = Math.min(100, Math.max(0, ((event.clientY - bounds.top) / bounds.height) * 100));
+      setZoomOrigin(`${x}% ${y}%`);
+    }
+    setIsZoomed((value) => !value);
+  };
+
   if (error) return <div className="container">{error}</div>;
   if (!product) return <div className="container">Loading...</div>;
 
@@ -156,14 +168,19 @@ export default function ProductDetail() {
                 <CarouselItem key={`${image}-${index}`} className="product-carousel-item">
                   <div
                     className={`gallery-stage ${isZoomed && selectedImage === index ? 'zoomed' : ''}`}
-                    onClick={() => setIsZoomed((value) => !value)}
+                    onClick={toggleZoom}
                   >
-                    <img src={image} alt={`${product.name} view ${index + 1}`} />
+                    <img
+                      src={image}
+                      alt={`${product.name} view ${index + 1}`}
+                      style={{ '--zoom-origin': zoomOrigin }}
+                    />
                     <button
                       type="button"
                       className="zoom-toggle"
                       onClick={(event) => {
                         event.stopPropagation();
+                        setZoomOrigin('center center');
                         setIsZoomed((value) => !value);
                       }}
                     >
