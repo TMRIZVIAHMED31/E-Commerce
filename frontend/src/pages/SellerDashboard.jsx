@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 
 const emptyForm = {
   name: '',
@@ -29,6 +30,7 @@ export default function SellerDashboard() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [pendingProduct, setPendingProduct] = useState(null);
 
   const load = async () => {
     const { data } = await api.get('/products/mine/list');
@@ -144,17 +146,18 @@ export default function SellerDashboard() {
     });
   };
 
-  const handleDelete = async (idToDelete) => {
+  const handleDelete = async () => {
+    if (!pendingProduct) return;
     if (deletingId) return;
-    if (!confirm('Delete this product?')) return;
-    setDeletingId(idToDelete);
+    setDeletingId(pendingProduct._id);
     try {
-      await api.delete(`/products/${idToDelete}`);
+      await api.delete(`/products/${pendingProduct._id}`);
       load();
     } catch (err) {
       alert(err.response?.data?.message || 'Delete failed');
     } finally {
       setDeletingId(null);
+      setPendingProduct(null);
     }
   };
 
@@ -288,7 +291,7 @@ export default function SellerDashboard() {
               {user.role === 'admin' && <td>{p.seller?.name}</td>}
               <td>
                 <button type="button" onClick={() => handleEdit(p)}>Edit</button>
-                <button type="button" disabled={deletingId === p._id} onClick={() => handleDelete(p._id)}>{deletingId === p._id ? 'Deleting...' : 'Delete'}</button>
+                <button type="button" disabled={deletingId === p._id} onClick={() => setPendingProduct(p)}>{deletingId === p._id ? 'Deleting...' : 'Delete'}</button>
               </td>
             </tr>
           ))}
@@ -299,6 +302,14 @@ export default function SellerDashboard() {
           )}
         </tbody>
       </table>
+      <DeleteConfirmDialog
+        open={Boolean(pendingProduct)}
+        onOpenChange={(open) => !open && !deletingId && setPendingProduct(null)}
+        onConfirm={handleDelete}
+        loading={Boolean(deletingId)}
+        title={`Delete ${pendingProduct?.name || 'this product'}?`}
+        description="This product and its listing will be permanently deleted."
+      />
     </div>
   );
 }

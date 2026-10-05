@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { apiOrigin } from '../api/axios';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
@@ -11,12 +12,21 @@ export default function Cart() {
   const { items, cartGroups, cartLoading, cartError, updateQuantity, removeFromCart } = useCart();
   const navigate = useNavigate();
   const [busyProduct, setBusyProduct] = useState(null);
+  const [pendingRemoval, setPendingRemoval] = useState(null);
 
   const handleQuantityChange = async (productId, value, userId) => {
     setBusyProduct(productId);
     const result = await updateQuantity(productId, value, userId);
     if (!result.success) window.alert(result.message);
     setBusyProduct(null);
+  };
+
+  const confirmRemoval = async () => {
+    if (!pendingRemoval) return;
+    setBusyProduct(pendingRemoval.productId);
+    await removeFromCart(pendingRemoval.productId, pendingRemoval.userId);
+    setBusyProduct(null);
+    setPendingRemoval(null);
   };
 
   const total = items.reduce(
@@ -62,13 +72,13 @@ export default function Cart() {
                     onChange={(event) => handleQuantityChange(product._id, event.target.value, cartUserId)}
                   />
                 </label>
-                <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async (event) => { event.stopPropagation(); setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
+                <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={(event) => { event.stopPropagation(); setPendingRemoval({ productId: product._id, userId: cartUserId, name: product.name }); }}>
                   Remove
                 </button>
               </div>
             )}
             {readOnly && user?.role === 'admin' && (
-              <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={async (event) => { event.stopPropagation(); setBusyProduct(product._id); await removeFromCart(product._id, cartUserId); setBusyProduct(null); }}>
+              <button type="button" className="link-button" disabled={busyProduct === product._id} onClick={(event) => { event.stopPropagation(); setPendingRemoval({ productId: product._id, userId: cartUserId, name: product.name }); }}>
                 Remove item
               </button>
             )}
@@ -123,6 +133,14 @@ export default function Cart() {
           </aside>
         </div>
       )}
+      <DeleteConfirmDialog
+        open={Boolean(pendingRemoval)}
+        onOpenChange={(open) => !open && !busyProduct && setPendingRemoval(null)}
+        onConfirm={confirmRemoval}
+        loading={Boolean(busyProduct)}
+        title={`Remove ${pendingRemoval?.name || 'item'}?`}
+        description="This item will be removed from the cart."
+      />
     </div>
   );
 }

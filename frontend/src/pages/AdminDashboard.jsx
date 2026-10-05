@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
 
 // Admin ("author") user management. Product management for admin lives in
 // SellerDashboard (admin sees ALL products there and can edit/delete any of them).
@@ -9,6 +10,7 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [pendingUser, setPendingUser] = useState(null);
 
   const load = async () => {
     const { data } = await api.get('/admin/users');
@@ -19,17 +21,18 @@ export default function AdminDashboard() {
     load();
   }, []);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
+    if (!pendingUser) return;
     if (deletingId) return;
-    if (!confirm('Delete this user?')) return;
-    setDeletingId(id);
+    setDeletingId(pendingUser._id);
     try {
-      await api.delete(`/admin/users/${id}`);
+      await api.delete(`/admin/users/${pendingUser._id}`);
       load();
     } catch (err) {
       setError(err.response?.data?.message || 'Delete failed');
     } finally {
       setDeletingId(null);
+      setPendingUser(null);
     }
   };
 
@@ -71,7 +74,7 @@ export default function AdminDashboard() {
                   </select>
                 )}
                 {u._id !== (currentUser?._id || currentUser?.id) && (
-                  <button type="button" disabled={deletingId === u._id} onClick={() => handleDelete(u._id)}>
+                  <button type="button" disabled={deletingId === u._id} onClick={() => setPendingUser(u)}>
                     {deletingId === u._id ? 'Deleting...' : 'Delete'}
                   </button>
                 )}
@@ -80,6 +83,15 @@ export default function AdminDashboard() {
           ))}
         </tbody>
       </table>
+
+      <DeleteConfirmDialog
+        open={Boolean(pendingUser)}
+        onOpenChange={(open) => !open && !deletingId && setPendingUser(null)}
+        onConfirm={handleDelete}
+        loading={Boolean(deletingId)}
+        title={`Delete ${pendingUser?.name || 'this user'}?`}
+        description="This user and their account data will be permanently deleted."
+      />
 
     </div>
   );
