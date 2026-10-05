@@ -91,6 +91,11 @@ a { text-decoration: none; color: inherit; }
 .product-shell { max-width: 1280px; }
 .product-page { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: 46px; align-items: start; padding: 18px 0 30px; }
 .product-gallery-panel { background: #f2efe8; border-radius: 18px; padding: 18px; }
+.product-carousel { padding: 0 34px; }
+.product-carousel-content { margin-left: 0; }
+.product-carousel-item { padding-left: 0; }
+.product-carousel-previous { left: 0; }
+.product-carousel-next { right: 0; }
 .gallery-stage { position: relative; display: grid; place-items: center; min-height: 360px; background: #f4f0ea; border-radius: 18px; overflow: hidden; cursor: zoom-in; }
 .gallery-stage.zoomed { cursor: zoom-out; }
 .gallery-stage img { width: 78%; max-width: 500px; max-height: 320px; object-fit: contain; transition: transform 0.25s ease; }

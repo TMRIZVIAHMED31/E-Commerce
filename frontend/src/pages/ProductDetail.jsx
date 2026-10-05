@@ -5,6 +5,13 @@ import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import ChatLogo from '../components/ChatLogo';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '../components/ui/carousel';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 const fallbackImage = 'https://images.unsplash.com/photo-1585518419759-7fe2e0fbf8a6?auto=format&fit=crop&w=900&q=80';
@@ -46,6 +53,7 @@ export default function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [carouselApi, setCarouselApi] = useState(null);
 
   useEffect(() => {
     api.get(`/products/${id}`).then((res) => setProduct(res.data)).catch(() => setError('Product not found'));
@@ -79,7 +87,24 @@ export default function ProductDetail() {
     return variantImages.length > 0 ? variantImages : allGalleryImages;
   }, [product, selectedColor, allGalleryImages]);
 
-  const activeProductImage = galleryImages[selectedImage] || galleryImages[0] || fallbackImage;
+  useEffect(() => {
+    if (!carouselApi) return undefined;
+
+    const handleSelect = () => {
+      setSelectedImage(carouselApi.selectedScrollSnap());
+      setIsZoomed(false);
+    };
+
+    handleSelect();
+    carouselApi.on('select', handleSelect);
+    return () => carouselApi.off('select', handleSelect);
+  }, [carouselApi]);
+
+  useEffect(() => {
+    if (carouselApi && selectedImage < galleryImages.length) {
+      carouselApi.scrollTo(selectedImage);
+    }
+  }, [carouselApi, galleryImages.length, selectedImage]);
 
   const startChat = async () => {
     try {
@@ -111,19 +136,38 @@ export default function ProductDetail() {
     <div className="container product-shell">
       <div className="product-page">
         <div className="product-gallery-panel">
-          <div className={`gallery-stage ${isZoomed ? 'zoomed' : ''}`} onClick={() => setIsZoomed((value) => !value)}>
-            <img src={activeProductImage} alt={product.name} />
-            <button
-              type="button"
-              className="zoom-toggle"
-              onClick={(event) => {
-                event.stopPropagation();
-                setIsZoomed((value) => !value);
-              }}
-            >
-              {isZoomed ? 'Click to zoom out' : 'Click to zoom'}
-            </button>
-          </div>
+          <Carousel
+            setApi={setCarouselApi}
+            opts={{ loop: galleryImages.length > 1 }}
+            className="product-carousel"
+          >
+            <CarouselContent className="product-carousel-content">
+              {galleryImages.map((image, index) => (
+                <CarouselItem key={`${image}-${index}`} className="product-carousel-item">
+                  <div
+                    className={`gallery-stage ${isZoomed && selectedImage === index ? 'zoomed' : ''}`}
+                    onClick={() => setIsZoomed((value) => !value)}
+                  >
+                    <img src={image} alt={`${product.name} view ${index + 1}`} />
+                    <button
+                      type="button"
+                      className="zoom-toggle"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setIsZoomed((value) => !value);
+                      }}
+                    >
+                      {isZoomed && selectedImage === index ? 'Click to zoom out' : 'Click to zoom'}
+                    </button>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            {galleryImages.length > 1 && <>
+              <CarouselPrevious className="product-carousel-previous" />
+              <CarouselNext className="product-carousel-next" />
+            </>}
+          </Carousel>
 
           <div className="thumbnail-row">
             {galleryImages.map((image, index) => (
@@ -134,6 +178,7 @@ export default function ProductDetail() {
                 onClick={() => {
                   setSelectedImage(index);
                   setIsZoomed(false);
+                  carouselApi?.scrollTo(index);
                 }}
               >
                 <img src={image} alt={`${product.name} view ${index + 1}`} />
