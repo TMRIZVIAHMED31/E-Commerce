@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { Toaster } from './components/ui/toast';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -15,7 +16,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <CartProvider>
           <ThemeProvider>
             <SocketProvider>
-              <App />
+              <Toaster>
+                <App />
+              </Toaster>
             </SocketProvider>
           </ThemeProvider>
         </CartProvider>

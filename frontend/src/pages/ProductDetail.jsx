@@ -5,6 +5,7 @@ import { apiOrigin } from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import ChatLogo from '../components/ChatLogo';
+import { toast } from '../components/ui/toast';
 import {
   Carousel,
   CarouselContent,
@@ -48,7 +49,6 @@ export default function ProductDetail() {
   const [product, setProduct] = useState(null);
   const [error, setError] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [cartMessage, setCartMessage] = useState('');
   const [adding, setAdding] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -133,7 +133,11 @@ export default function ProductDetail() {
     if (adding) return;
     setAdding(true);
     const result = await addToCart(product, quantity);
-    setCartMessage(result.message || `${quantity} item${quantity === 1 ? '' : 's'} added to cart.`);
+    toast.add({
+      title: result.success ? 'Added to cart' : 'Could not add to cart',
+      description: result.message || (result.success ? `${quantity} item${quantity === 1 ? '' : 's'} added.` : 'Please try again.'),
+      type: result.success ? 'success' : 'error',
+    });
     if (result.success && buyNow) navigate('/cart');
     setAdding(false);
   };
@@ -315,7 +319,6 @@ export default function ProductDetail() {
           )}
           {!user && <p className="muted">Login as a buyer to chat with the seller.</p>}
           {isOwnProduct && <p className="muted">This is your own product listing.</p>}
-          {cartMessage && <p className="cart-message" role="status">{cartMessage}</p>}
         </div>
       </div>
     </div>
