@@ -80,12 +80,16 @@ export default function ProductDetail() {
     return [primary];
   }, [product]);
 
-  const galleryImages = useMemo(() => {
-    const selectedName = selectedColor?.name?.trim().toLowerCase();
-    const variant = product?.colorImages?.find((group) => group.color?.trim().toLowerCase() === selectedName);
-    const variantImages = variant?.images?.map((image) => imageUrl(image)).filter(Boolean) || [];
-    return variantImages.length > 0 ? variantImages : allGalleryImages;
-  }, [product, selectedColor, allGalleryImages]);
+  const gallerySlides = useMemo(() => {
+    const variantSlides = product?.colorImages?.flatMap((group) => (
+      group.images?.map((image) => ({ image: imageUrl(image), color: group.color })) || []
+    )).filter((slide) => slide.image) || [];
+
+    if (variantSlides.length > 0) return variantSlides;
+    return allGalleryImages.map((image) => ({ image, color: null }));
+  }, [product, allGalleryImages]);
+
+  const galleryImages = gallerySlides.map((slide) => slide.image);
 
   useEffect(() => {
     if (!carouselApi) return undefined;
@@ -93,12 +97,18 @@ export default function ProductDetail() {
     const handleSelect = () => {
       setSelectedImage(carouselApi.selectedScrollSnap());
       setIsZoomed(false);
+      const activeSlide = gallerySlides[carouselApi.selectedScrollSnap()];
+      if (activeSlide?.color) {
+        setSelectedColor((current) => colorOptions.find(
+          (option) => option.name.trim().toLowerCase() === activeSlide.color.trim().toLowerCase()
+        ) || current);
+      }
     };
 
     handleSelect();
     carouselApi.on('select', handleSelect);
     return () => carouselApi.off('select', handleSelect);
-  }, [carouselApi]);
+  }, [carouselApi, colorOptions, gallerySlides]);
 
   useEffect(() => {
     if (carouselApi && selectedImage < galleryImages.length) {
@@ -210,8 +220,13 @@ export default function ProductDetail() {
                     style={{ backgroundColor: color.value }}
                     onClick={() => {
                       setSelectedColor(color);
-                      setSelectedImage(0);
+                      const colorIndex = gallerySlides.findIndex((slide) => (
+                        slide.color?.trim().toLowerCase() === color.name.trim().toLowerCase()
+                      ));
+                      const nextImage = colorIndex >= 0 ? colorIndex : 0;
+                      setSelectedImage(nextImage);
                       setIsZoomed(false);
+                      carouselApi?.scrollTo(nextImage);
                     }}
                   >
                     <span className="sr-only">{color.name}</span>
