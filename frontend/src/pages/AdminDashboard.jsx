@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
+import { Spinner } from '../components/ui/spinner';
 
 // Admin ("author") user management. Product management for admin lives in
 // SellerDashboard (admin sees ALL products there and can edit/delete any of them).
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
                 )}
                 {u._id !== (currentUser?._id || currentUser?.id) && (
                   <button type="button" disabled={deletingId === u._id} onClick={() => setPendingUser(u)}>
-                    {deletingId === u._id ? 'Deleting...' : 'Delete'}
+                    {deletingId === u._id ? <><Spinner /> Deleting...</> : 'Delete'}
                   </button>
                 )}
               </td>

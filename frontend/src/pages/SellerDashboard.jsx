@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
+import { Spinner } from '../components/ui/spinner';
 
 const emptyForm = {
   name: '',
@@ -267,7 +268,7 @@ export default function SellerDashboard() {
           )}
         </div>
         <div className="form-actions">
-          <button type="submit" disabled={saving}>{saving ? 'Saving...' : editingId ? 'Update' : 'Create'}</button>
+          <button type="submit" disabled={saving}>{saving ? <><Spinner /> Saving...</> : editingId ? 'Update' : 'Create'}</button>
           {editingId && <button type="button" onClick={resetForm}>Cancel</button>}
         </div>
       </form>
@@ -291,7 +292,7 @@ export default function SellerDashboard() {
               {user.role === 'admin' && <td>{p.seller?.name}</td>}
               <td>
                 <button type="button" onClick={() => handleEdit(p)}>Edit</button>
-                <button type="button" disabled={deletingId === p._id} onClick={() => setPendingProduct(p)}>{deletingId === p._id ? 'Deleting...' : 'Delete'}</button>
+                <button type="button" disabled={deletingId === p._id} onClick={() => setPendingProduct(p)}>{deletingId === p._id ? <><Spinner /> Deleting...</> : 'Delete'}</button>
               </td>
             </tr>
           ))}

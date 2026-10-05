@@ -10,6 +10,7 @@ import {
   AlertDialogMedia,
   AlertDialogTitle,
 } from './ui/alert-dialog';
+import { Spinner } from './ui/spinner';
 
 export default function DeleteConfirmDialog({
   open,
@@ -32,7 +33,7 @@ export default function DeleteConfirmDialog({
         <AlertDialogFooter>
           <AlertDialogCancel variant="outline" disabled={loading}>Cancel</AlertDialogCancel>
           <AlertDialogAction variant="destructive" onClick={onConfirm} disabled={loading}>
-            {loading ? 'Deleting...' : 'Delete'}
+            {loading ? <><Spinner /> Deleting...</> : 'Delete'}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

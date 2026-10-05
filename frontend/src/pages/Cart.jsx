@@ -4,6 +4,7 @@ import { apiOrigin } from '../api/axios';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
+import { Spinner } from '../components/ui/spinner';
 
 const imageUrl = (image) => (image?.startsWith('/') ? `${apiOrigin}${image}` : image);
 
@@ -100,7 +101,7 @@ export default function Cart() {
       </div>
 
       {cartLoading ? (
-        <p className="center">Loading your cart...</p>
+        <p className="center flex items-center justify-center gap-2"><Spinner /> Loading your cart...</p>
       ) : cartError ? (
         <div className="empty-state">
           <h2>Cart unavailable</h2>

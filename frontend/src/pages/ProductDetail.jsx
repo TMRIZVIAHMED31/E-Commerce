@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import ChatLogo from '../components/ChatLogo';
 import { toast } from '../components/ui/toast';
+import { Spinner } from '../components/ui/spinner';
 import {
   Carousel,
   CarouselContent,
@@ -154,7 +155,7 @@ export default function ProductDetail() {
   };
 
   if (error) return <div className="container">{error}</div>;
-  if (!product) return <div className="container">Loading...</div>;
+  if (!product) return <div className="container flex items-center gap-2"><Spinner /> Loading...</div>;
 
   const isOwnProduct = user && user._id === product.seller?._id;
 
@@ -267,7 +268,7 @@ export default function ProductDetail() {
 
             {user?.role === 'user' && (
               <button type="button" className="add-to-cart-button" disabled={product.stock < 1 || adding} onClick={() => addProduct()}>
-                🛒 {adding ? 'Adding...' : 'Add to Cart'}
+                {adding ? <><Spinner /> Adding...</> : '🛒 Add to Cart'}
               </button>
             )}
           </div>

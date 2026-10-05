@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 
 const gmailPattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@gmail\\.com$";
 
@@ -93,7 +94,7 @@ export default function Login() {
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button type="submit" form="login-form" className="w-full" disabled={submitting}>
-            {submitting ? 'Logging in...' : 'Login'}
+            {submitting ? <><Spinner /> Logging in...</> : 'Login'}
           </Button>
           <p className="muted text-center">
             Admin/author accounts are seeded on the server and cannot self-register.

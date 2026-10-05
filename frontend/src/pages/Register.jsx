@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 
 const gmailPattern = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@gmail\\.com$";
 
@@ -115,7 +116,7 @@ export default function Register() {
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button type="submit" form="register-form" className="w-full" disabled={submitting}>
-            {submitting ? 'Creating account...' : 'Create account'}
+            {submitting ? <><Spinner /> Creating account...</> : 'Create account'}
           </Button>
           <p className="text-center text-sm">
             Already have an account? <Link className="text-link" to="/login">Log in</Link>

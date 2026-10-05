@@ -4,6 +4,7 @@ import ProductCard from '../components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -53,7 +54,7 @@ export default function Home() {
       </form>
 
       {loading ? (
-        <p>Loading products...</p>
+        <p className="flex items-center gap-2"><Spinner /> Loading products...</p>
       ) : error ? (
         <p role="alert">{error}</p>
       ) : (
