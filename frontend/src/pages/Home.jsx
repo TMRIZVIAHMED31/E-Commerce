@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import { Button } from '@/components/ui/button';
+import { Field } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -39,12 +41,15 @@ export default function Home() {
   return (
     <div className="container">
       <form className="search-bar" onSubmit={handleSearch}>
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search products..."
-        />
-        <Button type="submit">Search</Button>
+        <Field orientation="horizontal">
+          <Input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search products..."
+          />
+          <Button type="submit">Search</Button>
+        </Field>
       </form>
 
       {loading ? (
