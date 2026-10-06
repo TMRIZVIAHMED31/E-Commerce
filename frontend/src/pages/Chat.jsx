@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -13,6 +13,14 @@ import {
   MessageContent,
   MessageFooter,
 } from '@/components/ui/message';
+import {
+  MessageScroller,
+  MessageScrollerButton,
+  MessageScrollerContent,
+  MessageScrollerItem,
+  MessageScrollerProvider,
+  MessageScrollerViewport,
+} from '@/components/ui/message-scroller';
 
 const formatDateTime = (value) => (
   value
@@ -37,7 +45,6 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
   const [othersTyping, setOthersTyping] = useState(false);
-  const bottomRef = useRef(null);
 
   // Load message history over REST
   useEffect(() => {
@@ -66,10 +73,6 @@ export default function Chat() {
     };
   }, [socket, connected, conversationId]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
   const sendMessage = (e) => {
     e.preventDefault();
     if (!text.trim() || !socket) return;
@@ -85,53 +88,73 @@ export default function Chat() {
 
   return (
     <div className="container narrow chat-page">
-      <h2 className="chat-heading"><ChatLogo /> Chat {!connected && <span className="muted">(connecting...)</span>}</h2>
+      <h2 className="chat-heading">
+        <ChatLogo />
+        <span className="chat-heading-copy">
+          <span>Chat</span>
+          <span className={`chat-connection-status ${connected ? 'is-connected' : ''}`}>
+            <span className="chat-connection-dot" />
+            {connected ? 'Connected' : 'Connecting...'}
+          </span>
+        </span>
+      </h2>
 
-      <div className="messages">
-        {messages.map((m) => {
-          const isMine = m.sender?._id === user._id;
-          const senderName = m.sender?.name || 'Unknown user';
-          const avatarUrl = m.sender?.avatar || m.sender?.image;
+      <MessageScrollerProvider>
+        <MessageScroller className="messages">
+          <MessageScrollerViewport className="messages-viewport">
+            <MessageScrollerContent>
+              {messages.map((m) => {
+                const isMine = m.sender?._id === user._id;
+                const senderName = m.sender?.name || 'Unknown user';
+                const avatarUrl = m.sender?.avatar || m.sender?.image;
 
-          return (
-            <Message
-              key={m._id}
-              align="start"
-              className={isMine ? 'justify-end' : 'justify-start'}
-            >
-              <MessageAvatar>
-                <Avatar>
-                  {avatarUrl && <AvatarImage src={avatarUrl} alt={senderName} />}
-                  <AvatarFallback>{initialsFor(senderName)}</AvatarFallback>
-                </Avatar>
-              </MessageAvatar>
-              <MessageContent
-                className={isMine ? 'items-end' : 'items-start'}
-                style={{ alignItems: isMine ? 'flex-end' : 'flex-start' }}
-              >
-                <span className="sender">{senderName}</span>
-                <Bubble
-                  variant={isMine ? 'default' : 'muted'}
-                  className={isMine ? 'self-end' : 'self-start'}
-                >
-                  <BubbleContent>{m.text}</BubbleContent>
-                </Bubble>
-                <MessageFooter>
-                  {formatDateTime(m.createdAt)}{isMine ? ' - Delivered' : ''}
-                </MessageFooter>
-              </MessageContent>
-            </Message>
-          );
-        })}
-        {othersTyping && (
-          <Marker role="status">
-            <MarkerContent>
-              Someone is typing...
-            </MarkerContent>
-          </Marker>
-        )}
-        <div ref={bottomRef} />
-      </div>
+                return (
+                  <MessageScrollerItem
+                    key={m._id}
+                    messageId={m._id}
+                    scrollAnchor={isMine}
+                  >
+                    <Message
+                      align="start"
+                      className={isMine ? 'justify-end' : 'justify-start'}
+                    >
+                      <MessageAvatar>
+                        <Avatar>
+                          {avatarUrl && <AvatarImage src={avatarUrl} alt={senderName} />}
+                          <AvatarFallback>{initialsFor(senderName)}</AvatarFallback>
+                        </Avatar>
+                      </MessageAvatar>
+                      <MessageContent
+                        className={isMine ? 'items-end' : 'items-start'}
+                        style={{ alignItems: isMine ? 'flex-end' : 'flex-start' }}
+                      >
+                        <span className="sender">{senderName}</span>
+                        <Bubble
+                          variant={isMine ? 'default' : 'muted'}
+                          className={isMine ? 'self-end' : 'self-start'}
+                        >
+                          <BubbleContent>{m.text}</BubbleContent>
+                        </Bubble>
+                        <MessageFooter>
+                          {formatDateTime(m.createdAt)}{isMine ? ' - Delivered' : ''}
+                        </MessageFooter>
+                      </MessageContent>
+                    </Message>
+                  </MessageScrollerItem>
+                );
+              })}
+              {othersTyping && (
+                <Marker role="status">
+                  <MarkerContent>
+                    Someone is typing...
+                  </MarkerContent>
+                </Marker>
+              )}
+            </MessageScrollerContent>
+          </MessageScrollerViewport>
+          <MessageScrollerButton />
+        </MessageScroller>
+      </MessageScrollerProvider>
 
       <form onSubmit={sendMessage} className="chat-input">
         <input
