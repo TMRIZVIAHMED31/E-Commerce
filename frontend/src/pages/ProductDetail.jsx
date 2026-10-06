@@ -318,8 +318,7 @@ export default function ProductDetail() {
               Chat with seller
             </button>
           )}
-          {!user && <p className="muted">Login as a buyer to chat with the seller.</p>}
-          {isOwnProduct && <p className="muted">This is your own product listing.</p>}
+          
         </div>
       </div>
     </div>
