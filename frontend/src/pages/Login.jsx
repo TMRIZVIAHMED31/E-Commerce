@@ -45,7 +45,7 @@ export default function Login() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
-          <CardDescription>Enter your email below to log in to your account.</CardDescription>
+
           <CardAction>
             <Button type="button" variant="link" onClick={() => navigate('/register')}>
               Sign Up
@@ -96,9 +96,7 @@ export default function Login() {
           <Button type="submit" form="login-form" className="w-full" disabled={submitting}>
             {submitting ? <><Spinner /> Logging in...</> : 'Login'}
           </Button>
-          <p className="muted text-center">
-            Admin/author accounts are seeded on the server and cannot self-register.
-          </p>
+
           <p className="text-center text-sm">
             No account? <Link className="text-link" to="/register">Register</Link>
           </p>
