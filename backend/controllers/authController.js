@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 const signToken = (user) =>
-  jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
 // @route POST /api/auth/register
 // Public users can register as 'user' or 'seller'. Admin accounts are seeded separately
