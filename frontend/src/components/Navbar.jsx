@@ -18,6 +18,7 @@ import { useCart } from '../context/CartContext';
 import { useTheme } from '../context/ThemeContext';
 import api from '../api/axios';
 import { Button } from './ui/button';
+import { SidebarTrigger } from './ui/sidebar';
 import {
   Command,
   CommandDialog,
@@ -70,6 +71,7 @@ export default function Navbar() {
   return (
     <nav className="navbar">
       <div className="brand-area">
+        <SidebarTrigger aria-label="Toggle sidebar" />
         <Button
           type="button"
           variant="ghost"

@@ -1,6 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
+import AppSidebar from './components/AppSidebar';
 import Navbar from './components/Navbar';
 import PrivateRoute from './components/PrivateRoute';
+import { SidebarInset, SidebarProvider } from './components/ui/sidebar';
 
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -14,55 +16,58 @@ import Cart from './pages/Cart';
 
 export default function App() {
   return (
-    <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
-        <Route
-          path="/cart"
-          element={
-            <PrivateRoute>
-              <Cart />
-            </PrivateRoute>
-          }
-        />
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
+          <Route
+            path="/cart"
+            element={
+              <PrivateRoute>
+                <Cart />
+              </PrivateRoute>
+            }
+          />
 
-        <Route
-          path="/seller"
-          element={
-            <PrivateRoute roles={['seller', 'admin']}>
-              <SellerDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PrivateRoute roles={['admin']}>
-              <AdminDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/inbox"
-          element={
-            <PrivateRoute>
-              <Inbox />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/chat/:conversationId"
-          element={
-            <PrivateRoute>
-              <Chat />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </>
+          <Route
+            path="/seller"
+            element={
+              <PrivateRoute roles={['seller', 'admin']}>
+                <SellerDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute roles={['admin']}>
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/inbox"
+            element={
+              <PrivateRoute>
+                <Inbox />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/chat/:conversationId"
+            element={
+              <PrivateRoute>
+                <Chat />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
