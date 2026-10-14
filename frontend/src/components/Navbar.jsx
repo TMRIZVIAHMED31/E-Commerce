@@ -7,8 +7,10 @@ import {
   MessageCircleIcon,
   MoreHorizontalIcon,
   MoonIcon,
+  ShieldCheckIcon,
   ShoppingCartIcon,
   SunIcon,
+  StoreIcon,
   UserPlusIcon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -113,6 +115,18 @@ export default function Navbar() {
                       <span>Register</span>
                     </CommandItem>
                   </>
+                )}
+                {user && (user.role === 'seller' || user.role === 'admin') && (
+                  <CommandItem onSelect={() => runMenuAction(() => navigate('/seller'))}>
+                    <StoreIcon />
+                    <span>Seller Dashboard</span>
+                  </CommandItem>
+                )}
+                {user?.role === 'admin' && (
+                  <CommandItem onSelect={() => runMenuAction(() => navigate('/admin'))}>
+                    <ShieldCheckIcon />
+                    <span>Admin</span>
+                  </CommandItem>
                 )}
                 <CommandItem onSelect={() => runMenuAction(() => setTheme(darkMode ? 'light' : 'dark'))}>
                   {darkMode ? <SunIcon /> : <MoonIcon />}
