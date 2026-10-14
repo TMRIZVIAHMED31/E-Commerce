@@ -17,7 +17,8 @@ export default function Home() {
     setError('');
     try {
       const { data } = await api.get('/products', { params: q ? { search: q } : {} });
-      setProducts(Array.isArray(data.products) ? data.products : []);
+      const nextProducts = Array.isArray(data) ? data : data?.products;
+      setProducts(Array.isArray(nextProducts) ? nextProducts : []);
     } catch (err) {
       console.error(err);
       setProducts([]);

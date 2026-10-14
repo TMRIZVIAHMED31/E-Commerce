@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const localApiUrl = 'http://localhost:5000/api';
 const productionApiUrl = 'https://e-commerce-lk03.onrender.com/api';
-const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+const configuredApiUrl = (import.meta.env.VITE_API_URL?.trim() || '').replace(/\/+$/, '');
 
 export const apiBaseUrl =
   configuredApiUrl ||
@@ -13,6 +13,7 @@ export const apiOrigin = apiBaseUrl.replace(/\/api\/?$/, '');
 
 const api = axios.create({
   baseURL: apiBaseUrl,
+  timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {

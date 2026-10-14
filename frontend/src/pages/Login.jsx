@@ -31,7 +31,7 @@ export default function Login() {
     setError('');
     setSubmitting(true);
     try {
-      await login(form.email, form.password);
+      await login(form.email.trim(), form.password);
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

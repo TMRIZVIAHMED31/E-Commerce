@@ -13,17 +13,18 @@ const register = async (req, res) => {
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Name, email and password are required' });
     }
-    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@gmail\.com$/i.test(email.trim())) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@gmail\.com$/i.test(normalizedEmail)) {
       return res.status(400).json({ message: 'Please use a valid Gmail address ending in @gmail.com' });
     }
 
     const allowedRoles = ['user', 'seller'];
     const finalRole = allowedRoles.includes(role) ? role : 'user';
 
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const existing = await User.findOne({ email: normalizedEmail });
     if (existing) return res.status(409).json({ message: 'Email already registered' });
 
-    const user = await User.create({ name, email, password, role: finalRole });
+    const user = await User.create({ name, email: normalizedEmail, password, role: finalRole });
     const token = signToken(user);
 
     res.status(201).json({ token, user: user.toSafeObject() });
@@ -40,7 +41,7 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
     const match = await user.comparePassword(password);
