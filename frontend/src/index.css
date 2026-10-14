@@ -59,8 +59,8 @@
   --sidebar-ring: oklch(0.6 0.15 160);
 
   /* custom tokens */
-  --navbar: oklch(36.159% 0.08069 159.596);
-  --navbar-foreground: oklch(0.97 0.01 165);
+  --navbar: oklch(1 0 0);
+  --navbar-foreground: oklch(0.21 0.04 295);
   --drawer: oklch(0.14 0.03 265);
   --drawer-foreground: oklch(0.95 0.01 170);
   --warning: oklch(0.77 0.16 70);
