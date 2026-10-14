@@ -1,15 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
 import {
+  CircleUserRoundIcon,
   HomeIcon,
   MessageCircleIcon,
+  MoonIcon,
   ShieldCheckIcon,
   ShoppingCartIcon,
+  SunIcon,
   StoreIcon,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -21,9 +26,11 @@ import {
 
 export default function AppSidebar() {
   const { user } = useAuth();
+  const { theme, setTheme } = useTheme();
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
+  const darkMode = theme === 'dark';
 
   return (
     <Sidebar>
@@ -88,6 +95,35 @@ export default function AppSidebar() {
           </SidebarGroup>
         )}
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              render={<button type="button" />}
+              onClick={() => setTheme(darkMode ? 'light' : 'dark')}
+              tooltip={darkMode ? 'Light mode' : 'Dark mode'}
+            >
+              {darkMode ? <SunIcon /> : <MoonIcon />}
+              <span>{darkMode ? 'Light mode' : 'Dark mode'}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          {user && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                render={<div />}
+                size="lg"
+                tooltip={user.email}
+              >
+                <CircleUserRoundIcon />
+                <span className="flex min-w-0 flex-col items-start">
+                  <span className="max-w-full truncate font-medium">{user.name}</span>
+                  <span className="max-w-full truncate text-xs text-sidebar-foreground/70">{user.email}</span>
+                </span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }
