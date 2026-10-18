@@ -18,8 +18,7 @@ export default function Navbar() {
         <Link to="/" className="brand">ShopMERN</Link>
       </div>
       <div className="nav-links">
-        {!user && <Link to="/login">Login</Link>}
-        {!user && <Link to="/register">Register</Link>}
+        {!user && <Link to="/login">Sign in</Link>}
         {user && (
           <span className="nav-user">
             {user.name} ({user.role})
