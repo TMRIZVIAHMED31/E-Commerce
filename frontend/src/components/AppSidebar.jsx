@@ -120,7 +120,7 @@ export default function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger
                   render={
-                    <SidebarMenuButton size="lg" tooltip={user.email}>
+                    <SidebarMenuButton size="lg" aria-label={`Open profile menu for ${user.name}`}>
                       <CircleUserRoundIcon />
                       <span className="flex min-w-0 flex-col items-start">
                         <span className="max-w-full truncate font-medium">{user.name}</span>
