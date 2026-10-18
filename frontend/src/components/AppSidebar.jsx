@@ -131,6 +131,7 @@ export default function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton
                     variant="outline"
+                    className="text-destructive hover:text-destructive"
                     onClick={() => {
                       logout();
                       navigate('/login');
