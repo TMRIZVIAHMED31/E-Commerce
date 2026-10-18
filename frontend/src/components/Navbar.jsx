@@ -13,6 +13,7 @@ export default function Navbar() {
       </div>
       <div className="nav-links">
         {!user && <Link to="/login">Sign in</Link>}
+        {user && <span className="nav-user">{user.name}</span>}
       </div>
     </nav>
   );
