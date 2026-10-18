@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CircleUserRoundIcon,
@@ -24,18 +25,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from './ui/sidebar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
 
 export default function AppSidebar() {
   const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
   const darkMode = theme === 'dark';
@@ -116,33 +112,36 @@ export default function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           {user && (
-            <SidebarMenuItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  render={
-                    <SidebarMenuButton size="lg" aria-label={`Open profile menu for ${user.name}`}>
-                      <CircleUserRoundIcon />
-                      <span className="flex min-w-0 flex-col items-start">
-                        <span className="max-w-full truncate font-medium">{user.name}</span>
-                        <span className="max-w-full truncate text-xs text-sidebar-foreground/70">{user.email}</span>
-                      </span>
-                    </SidebarMenuButton>
-                  }
-                />
-                <DropdownMenuContent side="top" align="end" className="w-48">
-                  <DropdownMenuItem
-                    variant="destructive"
+            <>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  size="lg"
+                  aria-label={`Open profile menu for ${user.name}`}
+                  aria-expanded={profileOpen}
+                  onClick={() => setProfileOpen((open) => !open)}
+                >
+                  <CircleUserRoundIcon />
+                  <span className="flex min-w-0 flex-col items-start">
+                    <span className="max-w-full truncate font-medium">{user.name}</span>
+                    <span className="max-w-full truncate text-xs text-sidebar-foreground/70">{user.email}</span>
+                  </span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {profileOpen && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    variant="outline"
                     onClick={() => {
                       logout();
                       navigate('/login');
                     }}
                   >
                     <LogOutIcon />
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
+                    <span>Log out</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+            </>
           )}
         </SidebarMenu>
       </SidebarFooter>
