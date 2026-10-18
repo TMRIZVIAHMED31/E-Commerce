@@ -1,7 +1,8 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   CircleUserRoundIcon,
   HomeIcon,
+  LogOutIcon,
   MessageCircleIcon,
   MoonIcon,
   ShieldCheckIcon,
@@ -23,11 +24,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from './ui/sidebar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 export default function AppSidebar() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
   const darkMode = theme === 'dark';
@@ -109,17 +117,31 @@ export default function AppSidebar() {
           </SidebarMenuItem>
           {user && (
             <SidebarMenuItem>
-              <SidebarMenuButton
-                render={<div />}
-                size="lg"
-                tooltip={user.email}
-              >
-                <CircleUserRoundIcon />
-                <span className="flex min-w-0 flex-col items-start">
-                  <span className="max-w-full truncate font-medium">{user.name}</span>
-                  <span className="max-w-full truncate text-xs text-sidebar-foreground/70">{user.email}</span>
-                </span>
-              </SidebarMenuButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <SidebarMenuButton size="lg" tooltip={user.email}>
+                      <CircleUserRoundIcon />
+                      <span className="flex min-w-0 flex-col items-start">
+                        <span className="max-w-full truncate font-medium">{user.name}</span>
+                        <span className="max-w-full truncate text-xs text-sidebar-foreground/70">{user.email}</span>
+                      </span>
+                    </SidebarMenuButton>
+                  }
+                />
+                <DropdownMenuContent side="top" align="end" className="w-48">
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onClick={() => {
+                      logout();
+                      navigate('/login');
+                    }}
+                  >
+                    <LogOutIcon />
+                    Log out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </SidebarMenuItem>
           )}
         </SidebarMenu>
